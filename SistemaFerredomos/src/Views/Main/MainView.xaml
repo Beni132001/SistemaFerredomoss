@@ -9,14 +9,15 @@
         Title="MainView" Height="700" Width="1300"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
-        Background="#00FFFFFF"
+        Background="Transparent"
         AllowsTransparency="True">
 
     <Border CornerRadius="10"
             BorderThickness="1"
             Background="Transparent">
 
-        <Border.BorderBrush >
+        <!-- Borde exterior -->
+        <Border.BorderBrush>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                 <GradientStop Color="{StaticResource winBorderColor1}" Offset="0"/>
                 <GradientStop Color="{StaticResource winBorderColor2}" Offset="0.5"/>
@@ -30,8 +31,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
+            <!-- Panel lateral -->
             <Border CornerRadius="10,0,0,10">
-                <Border.Background  >
+                <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,0.7">
                         <GradientStop Color="{StaticResource secondaryBackColor1}" Offset="0"/>
                         <GradientStop Color="{StaticResource secondaryBackColor2}" Offset="1"/>
@@ -39,36 +41,37 @@
                 </Border.Background>
 
                 <StackPanel>
-                    <!--logo-->
+                    <!-- Logo -->
                     <StackPanel Orientation="Horizontal" Height="35" Margin="15,25,0,40">
                         <Image Source="/src/Assets/logo.png" Height="30"/>
                         <TextBlock Text="FERREDOMOS DE DURANGO" 
-                               Foreground="{StaticResource titleColor1}"
-                               FontSize="20"
-                               FontFamily="Monserrat"
-                               FontWeight="Medium"
-                               VerticalAlignment="Center"
-                               Margin="10,0,0,0"/>
+                                   Foreground="{StaticResource titleColor1}"
+                                   FontSize="20"
+                                   FontFamily="Montserrat"
+                                   FontWeight="Medium"
+                                   VerticalAlignment="Center"
+                                   Margin="10,0,0,0"/>
                     </StackPanel>
 
-                    <RadioButton Style="{StaticResource menuButton}" Tag="{StaticResource color1}" IsChecked="True">
+                    <!-- Menú -->
+                    <RadioButton Style="{StaticResource menuButton}" IsChecked="True" Tag="{StaticResource color1}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="Home" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Inicio" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
                     </RadioButton>
 
-                    <RadioButton Style="{StaticResource menuButton}" Tag="{StaticResource color1}" IsChecked="True">
+                    <RadioButton Style="{StaticResource menuButton}" Tag="{StaticResource color1}">
                         <StackPanel Orientation="Horizontal">
                             <fa:IconImage Icon="User" Style="{StaticResource menuButtonIcon}"/>
                             <TextBlock Text="Usuario" Style="{StaticResource menuButtonText}"/>
                         </StackPanel>
                     </RadioButton>
-                    
-                </StackPanel>
 
+                </StackPanel>
             </Border>
-            <!--Main Section-->
+
+            <!-- Main Content -->
             <Border CornerRadius="0,10,10,0" Grid.Column="1">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="1,1" EndPoint="0,0">
@@ -84,7 +87,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
 
-                    <!--Control Bar-->
+                    <!-- Control Bar -->
                     <StackPanel x:Name="pnlControlBar"
                                 Grid.Row="0"
                                 Orientation="Horizontal"
@@ -95,32 +98,31 @@
                                 MouseEnter="pnlControlBar_MouseEnter">
                         <Button x:Name="btnClose"
                                 Style="{StaticResource controlButton}"
-                                Tag="{StaticResource color4}"
-                                Click="btnClose_Click">
+                                Click="btnClose_Click"
+                                Tag="{StaticResource color4}">
                             <fa:IconImage Icon="Xmark" Style="{StaticResource controlButtonIcon}"/>
                         </Button>
                         <Button x:Name="btnMaximize"
                                 Style="{StaticResource controlButton}"
-                                Tag="{StaticResource color6}"
-                                Click="btnMaximize_Click">
+                                Click="btnMaximize_Click"
+                                Tag="{StaticResource color6}">
                             <fa:IconImage Icon="Square" Style="{StaticResource controlButtonIcon}"/>
                         </Button>
                         <Button x:Name="btnMinimize"
                                 Style="{StaticResource controlButton}"
-                                Tag="{StaticResource color8}"
-                                Click="btnMinimize_Click">
+                                Click="btnMinimize_Click"
+                                Tag="{StaticResource color8}">
                             <fa:IconImage Icon="WindowMinimize" Width="12" Style="{StaticResource controlButtonIcon}"/>
                         </Button>
                     </StackPanel>
 
-                    <!--Header-->
+                    <!-- Header -->
                     <Grid Grid.Row="1">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
 
-                        <!--Caption-->
                         <StackPanel Grid.Column="0"
                                     Orientation="Horizontal"
                                     VerticalAlignment="Center">
@@ -137,7 +139,7 @@
                                        VerticalAlignment="Center"/>
                         </StackPanel>
 
-                        <!--User options-->
+                        <!-- Usuario -->
                         <StackPanel Grid.Column="1"
                                     Orientation="Horizontal"
                                     FlowDirection="RightToLeft"
@@ -158,21 +160,19 @@
                                      StrokeThickness="2"
                                      Margin="10,0,10,0">
                                 <Ellipse.Fill>
-                                    <ImageBrush ImageSource="/assets/logo.png"/>
+                                    <ImageBrush ImageSource="/src/Assets/logo.png"/>
                                 </Ellipse.Fill>
                             </Ellipse>
                         </StackPanel>
                     </Grid>
-                    <!--Content-->
+
+                    <!-- Content Area -->
                     <ContentControl Content="{Binding CurrentChildView}"
                                     Grid.Row="2"
                                     Margin="25"/>
 
                 </Grid>
             </Border>
-
         </Grid>
-
     </Border>
-    
 </Window>

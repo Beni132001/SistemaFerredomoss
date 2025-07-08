@@ -13,8 +13,8 @@ namespace SistemaFerredomos
     {
         protected void ApplicationStart(object sender, StartupEventArgs e)
         {
-            var login = new MainView();
-            login.Show();
+            var mainView = new MainView(); 
+            mainView.Show();
         }
     }
 
