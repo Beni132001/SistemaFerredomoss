@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Login"
         mc:Ignorable="d"
-        Title="LoginView" Height="650" Width="400"
+        Title="LoginView" 
+        Height="650" 
+        Width="400"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -15,10 +17,10 @@
 
     <Border CornerRadius="12">
         <Border CornerRadius="10"
-        BorderThickness="2"
-        Opacity="0.95">
+                BorderThickness="2"
+                Opacity="0.95">
 
-            <Border.BorderBrush >
+            <Border.BorderBrush>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                     <GradientStop Color="{StaticResource winBorderColor1}" Offset="0"/>
                     <GradientStop Color="{StaticResource winBorderColor2}" Offset="0.75"/>
@@ -26,7 +28,7 @@
                 </LinearGradientBrush>
             </Border.BorderBrush>
 
-            <Border.Background  >
+            <Border.Background>
                 <LinearGradientBrush StartPoint="0,1" EndPoint="1,0">
                     <GradientStop Color="{StaticResource primaryBackColor1}" Offset="0"/>
                     <GradientStop Color="{StaticResource primaryBackColor2}" Offset="1"/>
@@ -36,32 +38,39 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="30"/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
 
+                <!-- Barra superior -->
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
                         <ColumnDefinition Width="25"/>
                         <ColumnDefinition Width="25"/>
                         <ColumnDefinition Width="5"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Inicio de sesion" Foreground="DarkGray"
-                       FontSize="10"
-                       FontFamily="Montserrat"
-                       Grid.Column="0"
-                       VerticalAlignment="Center"
-                       Margin="10,0,0,0"/>
+
+                    <TextBlock Text="Inicio de sesion" 
+                               Foreground="DarkGray"
+                               FontSize="10"
+                               FontFamily="Montserrat"
+                               Grid.Column="0"
+                               VerticalAlignment="Center"
+                               Margin="10,0,0,0"/>
+
+                    <!-- Botón Minimizar -->
                     <Button x:Name="btnMiniminizar"
-                BorderThickness="0"
-                Content="-"
-                Foreground="White"
-                FontSize="16"
-                FontFamily="Montserrat"
-                Cursor="Hand"
-                Grid.Column="1">
+                            BorderThickness="0"
+                            Content="-"
+                            Foreground="White"
+                            FontSize="16"
+                            FontFamily="Montserrat"
+                            Cursor="Hand"
+                            Grid.Column="1"
+                            Click="btnMinimize_Click">
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter
-                        Property="Background" Value="#28AEED"/>
+                                <Setter Property="Background" Value="#28AEED"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="#278BEF"/>
@@ -69,30 +78,29 @@
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                        <Button.Template >
+                        <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Width="18" Height="18" CornerRadius="9" Background="{TemplateBinding Background}">
                                     <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
                                 </Border>
-
                             </ControlTemplate>
                         </Button.Template>
-
                     </Button>
 
+                    <!-- Botón Cerrar -->
                     <Button x:Name="btnCerrar"
-BorderThickness="0"
-Content="X"
-Foreground="White"
-FontSize="16"
-FontFamily="Montserrat"
-Cursor="Hand"
-Grid.Column="2">
+                            BorderThickness="0"
+                            Content="X"
+                            Foreground="White"
+                            FontSize="16"
+                            FontFamily="Montserrat"
+                            Cursor="Hand"
+                            Grid.Column="2"
+                            Click="btnClose_Click">
+                            
                         <Button.Style>
                             <Style TargetType="Button">
-                                <Setter
-        Property="Background" Value="#FE5800"/>
+                                <Setter Property="Background" Value="#FE5800"/>
                                 <Style.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
                                         <Setter Property="Background" Value="#A93A00"/>
@@ -100,32 +108,50 @@ Grid.Column="2">
                                 </Style.Triggers>
                             </Style>
                         </Button.Style>
-                        <Button.Template >
+                        <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Width="18" Height="18" CornerRadius="9" Background="{TemplateBinding Background}">
                                     <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
                                 </Border>
-
                             </ControlTemplate>
                         </Button.Template>
-
                     </Button>
-
                 </Grid>
 
-                <StackPanel Width="220" Grid.Row="1" Orientation="Vertical" Margin="0,35,0,0" >
-                    <Image Source="/src/Assets/logo.png" Width="100" Height="100"/>
-                    <TextBlock Text="FERREDOMOS DE DURANGO" Foreground="White" FontSize="25" FontWeight="Medium" FontFamily="Montserrat" HorizontalAlignment="Center"/>
-                    <TextBlock Text="Inicio de sesion" Foreground="LightGray" FontSize="12" FontWeight="Medium" FontFamily="Montserrat" TextAlignment="Center" TextWrapping="Wrap" Margin="0,5,0,0"/>
-                    <TextBlock Text="Usuario" Foreground="DarkGray" FontSize="12" FontWeight="Medium" FontFamily="Montserrat" Margin="0,35,0,0 "/>
+                <!-- Contenido principal -->
+                <StackPanel Width="220" 
+                            Grid.Row="1" 
+                            Orientation="Vertical" 
+                            Margin="0,35,0,0">
+                    <!-- Problema con la imagen -->
+                    <Image Source="/src/Assets/logo.png" 
+                           Width="120" 
+                           Height="120"/>
+
+                    <TextBlock Text="FERREDOMOS DE DURANGO" 
+                               Foreground="White" 
+                               FontSize="15" 
+                               FontWeight="Medium" 
+                               FontFamily="Montserrat" 
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="Inicio de sesion" 
+                               Foreground="LightGray" 
+                               FontSize="12" 
+                               FontWeight="Medium" 
+                               FontFamily="Montserrat" 
+                               TextAlignment="Center" 
+                               TextWrapping="Wrap" 
+                               Margin="0,5,0,0"/>
+
+                    <TextBlock Text="Usuario" 
+                               Foreground="DarkGray" 
+                               FontSize="12" 
+                               FontWeight="Medium" 
+                               FontFamily="Montserrat" 
+                               Margin="0,35,0,0 "/>
                 </StackPanel>
-
             </Grid>
-
         </Border>
-
     </Border>
-    
-
 </Window>

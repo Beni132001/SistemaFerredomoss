@@ -2,6 +2,7 @@
 using System.Data;
 using System.Windows;
 using SistemaFerredomos.src.Views.Login;
+using SistemaFerredomos.src.Views.Main;
 
 namespace SistemaFerredomos
 {
@@ -12,7 +13,7 @@ namespace SistemaFerredomos
     {
         protected void ApplicationStart(object sender, StartupEventArgs e)
         {
-            var login = new LoginView();
+            var login = new MainView();
             login.Show();
         }
     }
