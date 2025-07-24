@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace SistemaFerredomos.src.Views.Main
 {
     /// <summary>
-    /// Lógica de interacción para Page1.xaml
+    /// Lógica de interacción para Products.xaml
     /// </summary>
-    public partial class Page1 : Page
+    public partial class Products : UserControl
     {
-        public Page1()
+        public Products()
         {
             InitializeComponent();
         }

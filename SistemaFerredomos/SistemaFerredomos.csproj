@@ -27,9 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="src\Models\" />
-    <Folder Include="src\ViewModels\" />
     <Folder Include="src\Styles\NewFolder\" />
+    <Folder Include="src\ViewModels\LoginViewModel\" />
+    <Folder Include="src\ViewModels\MainViewModel\" />
   </ItemGroup>
 
   <ItemGroup>
