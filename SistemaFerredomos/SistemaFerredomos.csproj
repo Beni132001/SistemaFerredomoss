@@ -28,12 +28,11 @@
 
   <ItemGroup>
     <Folder Include="src\Styles\NewFolder\" />
-    <Folder Include="src\ViewModels\LoginViewModel\" />
-    <Folder Include="src\ViewModels\MainViewModel\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
+    <PackageReference Include="MySql.Data" Version="9.4.0" />
   </ItemGroup>
 
 </Project>

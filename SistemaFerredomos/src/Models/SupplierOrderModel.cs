@@ -12,6 +12,7 @@ namespace SistemaFerredomos.src.Models
         public int UserId { get; set; }
         public DateTime Date { get; set; }
         public int SupplierId { get; set; }
+        public decimal TotalPrice { get; set; }
         public UserModel User { get; set; }
         public SupplierModel Supplier { get; set; }
         public List<SupplierOrderMaterialModel> Materials { get; set; } = new List<SupplierOrderMaterialModel>();

@@ -11,9 +11,9 @@ namespace SistemaFerredomos.src.Models
         public int Id { get; set; }
         public int UserId { get; set; }
         public DateTime Date { get; set; } 
-        public string ClientName { get; set; }
-        public string ClientNumber { get; set; }
-        public string State { get; set; }
+        public string CustomerName { get; set; }
+        public string CustomerPhone { get; set; }
+        public string Status { get; set; }
         public decimal TotalPrice { get; set; }
         public UserModel User { get; set; }
         public List<OrderDetailsProductionModel> Productions { get; set; } = new List<OrderDetailsProductionModel>();       

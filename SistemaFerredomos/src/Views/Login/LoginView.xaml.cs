@@ -1,4 +1,8 @@
-﻿using System;
+﻿using SistemaFerredomos.src.Models;
+using SistemaFerredomos.src.Repositories.LoginAuth;
+using SistemaFerredomos.src.ViewModels.LoginViewModel;
+using SistemaFerredomos.src.Views.Main;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,25 +23,27 @@ namespace SistemaFerredomos.src.Views.Login
     /// </summary>
     public partial class LoginView : Window
     {
-        public LoginView()
+        public LoginView(IUserRepository userRepository)
         {
             InitializeComponent();
-
-        }
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
-        }
-        private void btnMinimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
+            DataContext = new LoginViewModel(userRepository);
+            ((LoginViewModel)DataContext).LoginSuccessful += OnLoginSuccessful;
         }
 
-        private void btnClose_Click(object sender, RoutedEventArgs e)
+        private void OnLoginSuccessful(UserModel user)
         {
-            Application.Current.Shutdown();
+            // Aquí crearías la ventana principal según el tipo de usuario
+            var mainView = new MainView(user);
+            mainView.Show();
+            this.Close();
         }
 
+        private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (DataContext != null)
+            {
+                ((LoginViewModel)DataContext).Password = ((PasswordBox)sender).Password;
+            }
+        }
     }
 }

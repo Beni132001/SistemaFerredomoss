@@ -9,52 +9,23 @@ namespace SistemaFerredomos.src.ViewModels.Commons
 {
     public class RelayCommand : ICommand
     {
-        // Campos privados
-        private readonly Action<object> _executeAction;
-        private readonly Predicate<object> _canExecuteAction;
+        private readonly Action<object> _execute;
+        private readonly Func<object, bool> _canExecute;
 
-        // Constructor para comandos sin restricciones de ejecución
-        public RelayCommand(Action<object> executeAction)
-            : this(executeAction, null)
+        public RelayCommand(Action<object> execute, Func<object, bool> canExecute = null)
         {
+            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+            _canExecute = canExecute;
         }
 
-        // Constructor para comandos con restricciones de ejecución
-        public RelayCommand(Action<object> executeAction, Predicate<object> canExecuteAction)
-        {
-            _executeAction = executeAction ?? throw new ArgumentNullException(nameof(executeAction));
-            _canExecuteAction = canExecuteAction;
-        }
+        public bool CanExecute(object parameter) => _canExecute == null || _canExecute(parameter);
 
-        // Evento para notificar cambios en las condiciones de ejecución
+        public void Execute(object parameter) => _execute(parameter);
+
         public event EventHandler CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
-        }
-
-        // Determina si el comando puede ejecutarse
-        public bool CanExecute(object parameter)
-        {
-            return _canExecuteAction?.Invoke(parameter) ?? true;
-        }
-
-        // Ejecuta la acción asociada al comando
-        public void Execute(object parameter)
-        {
-            // Desvincula temporalmente CommandManager.RequerySuggested
-            CommandManager.InvalidateRequerySuggested();
-
-            _executeAction(parameter);
-
-            // Vuelve a vincular CommandManager.RequerySuggested
-            CommandManager.InvalidateRequerySuggested();
-        }
-
-        // Fuerza una actualización de la capacidad de ejecución del comando
-        public void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

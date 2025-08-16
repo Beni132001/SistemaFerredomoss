@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace SistemaFerredomos.src.Views.Main
 {
     /// <summary>
-    /// Lógica de interacción para Home.xaml
+    /// Lógica de interacción para HomeView.xaml
     /// </summary>
-    public partial class Home : UserControl
+    public partial class HomeView : UserControl
     {
-        public Home()
+        public HomeView()
         {
             InitializeComponent();
         }

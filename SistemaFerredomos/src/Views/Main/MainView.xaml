@@ -4,13 +4,63 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
-        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+        xmlns:vm="clr-namespace:SistemaFerredomos.src.ViewModels.Main"
         mc:Ignorable="d"
-        Title="MainView" Height="700" Width="1300"
-        WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
-        Background="Transparent"
-        AllowsTransparency="True">
+        Title="MainView" Height="450" Width="800">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:HomeViewModel}">
+            <local:HomeView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+            <local:ProductsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SupplierViewModel}">
+            <local:SupplierView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:OrdersViewModel}">
+            <local:OrdersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductionViewModel}">
+            <local:ProductionsView/>
+        </DataTemplate>
+    </Window.Resources>
 
-    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Menú lateral -->
+        <Border Grid.Column="0" Background="#2c3e50">
+            <StackPanel>
+                <TextBlock Text="Menú Principal" 
+                           Foreground="White" 
+                           FontSize="16"
+                           Margin="10,20,10,10"
+                           FontWeight="Bold"/>
+
+                <ItemsControl ItemsSource="{Binding MenuItems}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Title}" 
+                                    Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                    CommandParameter="{Binding ViewType}"
+                                    Style="{StaticResource MenuButtonStyle}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Content="Cerrar Sesión" 
+                        Command="{Binding LogoutCommand}"
+                        Style="{StaticResource LogoutButtonStyle}"
+                        Margin="10,50,10,10"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Área de contenido -->
+        <ContentControl Grid.Column="1" 
+                        Content="{Binding CurrentView}"
+                        Margin="10"/>
+    </Grid>
 </Window>

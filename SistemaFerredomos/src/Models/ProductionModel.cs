@@ -12,9 +12,7 @@ namespace SistemaFerredomos.src.Models
         public string Name { get; set; }
         public string Type { get; set; } //DOMO-PORTERO-VENTANAS
         public int DesindgId { get; set; }
-
         public decimal Price { get; set; }
-        public decimal? PriceTotal { get; set; }
         public decimal? Height { get; set; }
         public decimal? lenght { get; set; }
         public decimal? Width { get; set; }
