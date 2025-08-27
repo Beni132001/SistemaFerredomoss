@@ -11,18 +11,7 @@
         <DataTemplate DataType="{x:Type vm:HomeViewModel}">
             <local:HomeView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
-            <local:ProductsView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:SupplierViewModel}">
-            <local:SupplierView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:OrdersViewModel}">
-            <local:OrdersView/>
-        </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:ProductionViewModel}">
-            <local:ProductionsView/>
-        </DataTemplate>
+        
     </Window.Resources>
 
     <Grid>
