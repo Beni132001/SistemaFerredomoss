@@ -1,6 +1,7 @@
 ﻿using SistemaFerredomos.src.Models;
 using SistemaFerredomos.src.Repositories.LoginAuth;
 using SistemaFerredomos.src.ViewModels.LoginViewModel;
+using SistemaFerredomos.src.ViewModels.Main;
 using SistemaFerredomos.src.Views.Main;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,11 @@ namespace SistemaFerredomos.src.Views.Login
     /// </summary>
     public partial class LoginView : Window
     {
+        private readonly IUserRepository _userRepository;
         public LoginView(IUserRepository userRepository)
         {
             InitializeComponent();
+            _userRepository = userRepository;
             DataContext = new LoginViewModel(userRepository);
             ((LoginViewModel)DataContext).LoginSuccessful += OnLoginSuccessful;
         }
@@ -36,6 +39,18 @@ namespace SistemaFerredomos.src.Views.Login
             var mainView = new MainView(user);
             mainView.Show();
             this.Close();
+            //cerrar sesion
+            if (mainView.DataContext is MainViewModel mainViewModel)
+            {
+                mainViewModel.LogoutRequested += (s, e) =>
+                {
+                    mainView.Close();
+                    var loginView = new LoginView(_userRepository);
+                    loginView.Show();
+                };
+
+                
+            }
         }
 
         private void PasswordBox_PasswordChanged(object sender, RoutedEventArgs e)

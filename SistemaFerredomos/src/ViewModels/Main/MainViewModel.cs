@@ -51,14 +51,19 @@ namespace SistemaFerredomos.src.ViewModels.Main
         {
             MenuItems.Add(new NavItem { Title = "Inicio", ViewType = NavViewType.Home });
 
+            MenuItems.Add(new NavItem { Title = "Órdenes", ViewType = NavViewType.Orders });
+            MenuItems.Add(new NavItem { Title = "Pedidos", ViewType = NavViewType.POrders });
+            MenuItems.Add(new NavItem { Title = "Invetarios", ViewType = NavViewType.Inventorys });
+            MenuItems.Add(new NavItem { Title = "Diseños", ViewType = NavViewType.Desings});
+
             if (_currentUser.IsAdmin)
             {
-                MenuItems.Add(new NavItem { Title = "Porductos", ViewType = NavViewType.Products });
-                MenuItems.Add(new NavItem { Title = "Proveedores", ViewType = NavViewType.Supplier });
+                MenuItems.Add(new NavItem { Title = "Agregar", ViewType = NavViewType.Add });
+                MenuItems.Add(new NavItem { Title = "Actividad", ViewType = NavViewType.Activity });
+                MenuItems.Add(new NavItem { Title = "Opciones", ViewType = NavViewType.Options });
             }
 
-            MenuItems.Add(new NavItem { Title = "Órdenes", ViewType = NavViewType.Orders });
-            MenuItems.Add(new NavItem { Title = "Produccion", ViewType = NavViewType.Production });
+            
         }
 
         private void Navigate(object parameter)
@@ -68,10 +73,14 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 CurrentView = viewType switch
                 {
                     NavViewType.Home => new HomeViewModel(),
-                    NavViewType.Products => new ProductsViewModel(),
-                    NavViewType.Supplier => new SupplierViewModel(),
-                    NavViewType.Orders=> new OrdersViewModel(),
-                    NavViewType.Production => new ProductionViewModel(),
+                    NavViewType.Orders => new OrdersViewModel(),
+                    NavViewType.POrders => new OrdersViewModel(),
+                    NavViewType.Inventorys => new OrdersViewModel(),
+                    NavViewType.Desings => new OrdersViewModel(),
+                    NavViewType.Add => new ProductsViewModel(),
+                    NavViewType.Activity => new SupplierViewModel(),
+                    NavViewType.Options => new OrdersViewModel(),
+
                     _ => new HomeViewModel()
                 };
             }
@@ -87,10 +96,14 @@ namespace SistemaFerredomos.src.ViewModels.Main
     public enum NavViewType
     {
        Home,
-       Products,
-       Supplier,
-       Orders, 
-       Production
-        
+       Orders,
+       POrders,
+       Inventorys,
+       Desings,
+       Add,
+       Activity,
+       Options
+       
+      
     }
 }

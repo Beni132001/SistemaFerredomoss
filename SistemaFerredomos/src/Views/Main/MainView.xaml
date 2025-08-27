@@ -11,6 +11,9 @@
         <DataTemplate DataType="{x:Type vm:HomeViewModel}">
             <local:HomeView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+            <local:ProductsView/>
+        </DataTemplate>
         
     </Window.Resources>
 

@@ -9,5 +9,6 @@ namespace SistemaFerredomos.src.ViewModels.Main
 {
     public class ProductsViewModel : BaseViewModel
     {
+        public string mensaje => "Productos";
     }
 }
