@@ -44,12 +44,11 @@ namespace SistemaFerredomos.src.Views.Login
             {
                 mainViewModel.LogoutRequested += (s, e) =>
                 {
-                    mainView.Close();
                     var loginView = new LoginView(_userRepository);
                     loginView.Show();
+                    mainView.Close();
                 };
 
-                
             }
         }
 

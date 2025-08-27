@@ -7,8 +7,7 @@ using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.ViewModels.Main
 {
-    public class OrdersViewModel : BaseViewModel
+    class DomesViewModel : BaseViewModel
     {
-        public string mensaje => "Ordenes";
     }
 }

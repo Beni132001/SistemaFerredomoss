@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace SistemaFerredomos.src.Views.Main
 {
     /// <summary>
-    /// Lógica de interacción para ProductionView.xaml
+    /// Lógica de interacción para UsersView.xaml
     /// </summary>
-    public partial class ProductionView : UserControl
+    public partial class UsersView : UserControl
     {
-        public ProductionView()
+        public UsersView()
         {
             InitializeComponent();
         }

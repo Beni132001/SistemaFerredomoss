@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.ViewModels.Main
 {
-    public class ProductionViewModel : BaseViewModel
+    class MaterialInventoryViewModel : BaseViewModel
     {
     }
 }
