@@ -11,10 +11,54 @@
         <DataTemplate DataType="{x:Type vm:HomeViewModel}">
             <local:HomeView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MaterialsViewModel}">
+            <local:MaterialsView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
             <local:ProductsView/>
         </DataTemplate>
-        
+        <DataTemplate DataType="{x:Type vm:MaterialInventoryViewModel}">
+            <local:MaterialInventoryView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsInventoryViewModel}">
+            <local:ProductsInventoryView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:AddEditMaterialViewModel}">
+            <local:AddEditMaterialView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AddEditProductViewModel}">
+            <local:AddEditProductView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:GlassViewModel}">
+            <local:GlassView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DomesViewModel}">
+            <local:DomesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:WindowsViewModel}">
+            <local:WindowsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DoorViewModel}">
+            <local:DoorView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ActivityViewModel}">
+            <local:ActivityView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:UsersViewModel}">
+            <local:UsersView/>
+        </DataTemplate>
+
+        <!-- Plantilla para el menú con submenús -->
+        <HierarchicalDataTemplate DataType="{x:Type vm:NavItem}" ItemsSource="{Binding Children}">
+            <Button Content="{Binding Title}" 
+                    Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding ViewType}"
+                    Style="{StaticResource MenuButtonStyle}"
+                    HorizontalContentAlignment="Left"
+                    Padding="10,5"/>
+        </HierarchicalDataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -31,6 +75,16 @@
                            FontSize="16"
                            Margin="10,20,10,10"
                            FontWeight="Bold"/>
+                <!-- Menú con submenús -->
+                <TreeView ItemsSource="{Binding MenuItems}" 
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Foreground="White"/>
+
+                <Button Content="Cerrar Sesión" 
+                        Command="{Binding LogoutCommand}"
+                        Style="{StaticResource LogoutButtonStyle}"
+                        Margin="10,20,10,10"/>
 
                 <ItemsControl ItemsSource="{Binding MenuItems}">
                     <ItemsControl.ItemTemplate>

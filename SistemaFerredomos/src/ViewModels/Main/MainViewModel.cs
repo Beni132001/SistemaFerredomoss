@@ -1,4 +1,5 @@
 ﻿using SistemaFerredomos.src.Models;
+using SistemaFerredomos.src.Repositories.Main;
 using SistemaFerredomos.src.ViewModels.Commons;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
     {
         private readonly UserModel _currentUser;
         private BaseViewModel _currentView;
+        private readonly MaterialRepository _materialRepository;
+        private readonly ProductsRepository _productsRepository;
 
         public ICommand LogoutCommand { get; }
 
@@ -34,10 +37,25 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         public ICommand NavigateCommand { get; }
 
+        private void RefreshInventory()
+        {
+            if (CurrentView is MaterialInventoryViewModel materialVm)
+            {
+                materialVm.LoadMaterials(); // Método que recarga la lista en MaterialInventoryViewModel
+            }
+            else if (CurrentView is ProductsInventoryViewModel productVm)
+            {
+                productVm.LoadProducts(); // Similar, recarga productos
+            }
+        }
+
         public MainViewModel(UserModel user)
         {
             _currentUser = user;
             NavigateCommand = new RelayCommand(Navigate);
+
+            // Inicializar repositorios
+            _materialRepository = new MaterialRepository();
 
             // Construir menú según tipo de usuario
             BuildMenu();
@@ -62,7 +80,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             var InventorysMenu = new NavItem { Title = "Inventario", ViewType = NavViewType.Inventorys };
             InventorysMenu.Children.Add(new NavItem { Title="Iventario de materiales", ViewType=NavViewType.MaterialInventory });
-            InventorysMenu.Children.Add(new NavItem { Title = "Iventario de productos", ViewType = NavViewType.ProductsIventory });
+            InventorysMenu.Children.Add(new NavItem { Title = "Iventario de productos", ViewType = NavViewType.ProductsInventory });
 
             var DesingsMenu = new NavItem { Title = "Diseños", ViewType = NavViewType.Desings };
             DesingsMenu.Children.Add(new NavItem { Title = "Vidrios", ViewType = NavViewType.Glass });
@@ -70,6 +88,12 @@ namespace SistemaFerredomos.src.ViewModels.Main
             DesingsMenu.Children.Add(new NavItem { Title = "Ventanas", ViewType = NavViewType.Windows });
             DesingsMenu.Children.Add(new NavItem { Title = "Puertas", ViewType = NavViewType.Door });
 
+            MenuItems.Add(OrdersMenu);
+            MenuItems.Add(POrdersMenu);
+            MenuItems.Add(InventorysMenu);
+            MenuItems.Add(DesingsMenu);
+
+            //solo administrador
             if (_currentUser.IsAdmin)
             {
                 var AddMenu = new NavItem { Title = "Agregar", ViewType = NavViewType.Add };
@@ -78,12 +102,13 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 AddMenu.Children.Add(new NavItem { Title = "Proveedores", ViewType = NavViewType.Suppliers });
                 AddMenu.Children.Add(new NavItem { Title = "Diseños", ViewType = NavViewType.Desing });
 
-                MenuItems.Add(new NavItem { Title = "Actividad", ViewType = NavViewType.Activity });
+                MenuItems.Add(AddMenu); // <--- Agregar al menú principal
 
+                MenuItems.Add(new NavItem { Title = "Actividad", ViewType = NavViewType.Activity });
                 MenuItems.Add(new NavItem { Title = "Opciones", ViewType = NavViewType.Users });
             }
-
             
+
         }
 
         private void Navigate(object parameter)
@@ -97,19 +122,24 @@ namespace SistemaFerredomos.src.ViewModels.Main
                     NavViewType.OrdersReview => new OrdersReviewViewModel(),
                     NavViewType.NewPOrders=> new NewPOrdersViewModel(),
                     NavViewType.POrdersReview=>new POrdersReviewViewModel(),
-                    NavViewType.MaterialInventory=>new MaterialInventoryViewModel(),
-                    NavViewType.ProductsIventory=>new ProductsInventoryViewModel(),
+
+                    NavViewType.MaterialInventory=>new MaterialInventoryViewModel(new MaterialRepository(), _currentUser.IsAdmin),
+                    NavViewType.ProductsInventory=>new ProductsInventoryViewModel(new ProductsRepository(), _currentUser.IsAdmin),
+
+                    NavViewType.Materials => new AddEditMaterialViewModel(null, RefreshInventory, new MaterialRepository()),
+                    NavViewType.Products => new AddEditProductViewModel(null, RefreshInventory, new ProductsRepository()),
+
                     NavViewType.Glass=>new GlassViewModel(),
                     NavViewType.Domes=>new DomesViewModel(),
                     NavViewType.Windows=>new WindowsViewModel(),
                     NavViewType.Door=>new DoorViewModel(),
-                    NavViewType.Products=>new ProductsViewModel(),
-                    NavViewType.Materials=>new MaterialsViewModel(),
+                   // NavViewType.Products=>new ProductsViewModel(),
+                    //NavViewType.Materials=>new MaterialsViewModel(),
                     NavViewType.Suppliers=>new SupplierViewModel(),
                     NavViewType.Desing=>new DesingViewModel(),
                     NavViewType.Activity=>new ActivityViewModel(),
                     NavViewType.Users=> new UsersViewModel(),
-            
+
 
                     _ => new HomeViewModel()
                 };
@@ -139,7 +169,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
        Inventorys,
        MaterialInventory,
-       ProductsIventory,
+       ProductsInventory,
 
        Desings,
        Glass,
@@ -160,4 +190,5 @@ namespace SistemaFerredomos.src.ViewModels.Main
        
       
     }
+
 }

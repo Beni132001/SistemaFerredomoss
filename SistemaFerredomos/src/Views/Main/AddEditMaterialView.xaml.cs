@@ -1,5 +1,4 @@
-﻿using SistemaFerredomos.src.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,11 +16,11 @@ using System.Windows.Shapes;
 namespace SistemaFerredomos.src.Views.Main
 {
     /// <summary>
-    /// Lógica de interacción para MaterialsView.xaml
+    /// Lógica de interacción para AddEditMaterialView.xaml
     /// </summary>
-    public partial class MaterialsView : UserControl
+    public partial class AddEditMaterialView : UserControl
     {
-        public MaterialsView()
+        public AddEditMaterialView()
         {
             InitializeComponent();
         }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.Models
 {
-    class ProductsModel
+    public class ProductsModel
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public decimal stock { get; set; }
+        public decimal Stock { get; set; }
         public decimal PurchasePrice { get; set; }
         public decimal SalePrice { get; set; }
         public int SupplierId { get; set; }
