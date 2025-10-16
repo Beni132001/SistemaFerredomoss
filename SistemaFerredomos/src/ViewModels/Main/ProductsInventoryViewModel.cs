@@ -5,6 +5,7 @@ using SistemaFerredomos.src.Views.Main;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using System.Windows;
 
 namespace SistemaFerredomos.src.ViewModels.Main
 {
@@ -12,6 +13,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
     {
         private readonly ProductsRepository _repository;
         private bool _isAdmin;
+        private string _searchText;
 
         public ProductsInventoryViewModel(ProductsRepository repository = null, bool isAdmin = false)
         {
@@ -32,7 +34,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }, _ => IsAdmin);
         }
 
-        // Lista de productos
+        // Propiedades
         public ObservableCollection<ProductsModel> Products { get; set; }
         public ObservableCollection<ProductsModel> FilteredProducts { get; set; }
 
@@ -43,8 +45,6 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set => SetProperty(ref _selectedProduct, value);
         }
 
-        // buscador
-        private string _searchText;
         public string SearchText
         {
             get => _searchText;
@@ -66,19 +66,33 @@ namespace SistemaFerredomos.src.ViewModels.Main
         public ICommand EditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
 
-
         private void OpenAddEditProduct(ProductsModel product)
         {
-            var vm = new AddEditProductViewModel(product, LoadProducts);
+            Window window = null;
+
+            var vm = new AddEditProductViewModel(
+                product: product,
+                onSave: () =>
+                {
+                    LoadProducts();
+                    window?.Close();
+                },
+                onCancel: () =>
+                {
+                    window?.Close();
+                },
+                repository: _repository
+            );
+
             var view = new AddEditProductView { DataContext = vm };
 
-            // Mostrar como ventana flotante o overlay
-            var window = new System.Windows.Window
+            window = new Window
             {
                 Content = view,
                 Title = product == null ? "Agregar Producto" : "Editar Producto",
-                SizeToContent = System.Windows.SizeToContent.WidthAndHeight,
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen
+                SizeToContent = SizeToContent.WidthAndHeight,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                ResizeMode = ResizeMode.NoResize
             };
             window.ShowDialog();
         }
@@ -99,8 +113,11 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
             else
             {
-                var q = SearchText.ToLowerInvariant();
-                var filtered = Products.Where(p => (p.Name ?? string.Empty).ToLowerInvariant().Contains(q));
+                var query = SearchText.ToLower();
+                var filtered = Products.Where(p =>
+                    (p.Name ?? "").ToLower().Contains(query) ||
+                    (p.Supplier?.Name ?? "").ToLower().Contains(query)
+                );
                 FilteredProducts = new ObservableCollection<ProductsModel>(filtered);
             }
             OnPropertyChanged(nameof(FilteredProducts));
@@ -108,16 +125,20 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void DeleteProduct(ProductsModel product)
         {
-            if (System.Windows.MessageBox.Show($"¿Deseas eliminar el producto {product.Name}?",
-                "Confirmar eliminación", System.Windows.MessageBoxButton.YesNo) == System.Windows.MessageBoxResult.Yes)
+            if (MessageBox.Show($"¿Deseas eliminar el producto '{product.Name}'?",
+                "Confirmar eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 if (_repository.Delete(product.Id))
                 {
-                    System.Windows.MessageBox.Show("✅ Producto eliminado correctamente");
+                    MessageBox.Show("✅ Producto eliminado correctamente", "Éxito",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                     LoadProducts();
                 }
                 else
-                    System.Windows.MessageBox.Show("❌ Error al eliminar el producto");
+                {
+                    MessageBox.Show("❌ Error al eliminar el producto", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

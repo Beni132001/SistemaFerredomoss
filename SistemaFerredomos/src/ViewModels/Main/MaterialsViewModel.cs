@@ -46,8 +46,22 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void OpenAddEditView(MaterialModel material)
         {
-            // Crear VM del Add/Edit
-            var addEditVM = new AddEditMaterialViewModel(material, RefreshMaterials, _repository);
+            Window window = null;
+
+            // Crear VM del Add/Edit con ambos callbacks
+            var addEditVM = new AddEditMaterialViewModel(
+                material: material,
+                onSave: () =>
+                {
+                    RefreshMaterials();
+                    window?.Close(); // Cerrar ventana al guardar
+                },
+                onCancel: () =>
+                {
+                    window?.Close(); // Cerrar ventana al cancelar
+                },
+                repository: _repository
+            );
 
             // Mostrar control de usuario dentro de la vista
             var addEditView = new Views.Main.AddEditMaterialView
@@ -56,7 +70,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             };
 
             // Abrir como ventana modal
-            var window = new Window
+            window = new Window
             {
                 Title = material == null ? "Agregar Material" : "Editar Material",
                 Content = addEditView,

@@ -41,6 +41,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                                     Stock = reader.GetDecimal("stock"),
                                     PurchasePrice = reader.GetDecimal("purchase_price"),
                                     SalePrice = reader.GetDecimal("sale_price"),
+                                    Image = reader.IsDBNull(reader.GetOrdinal("image")) ? null : reader.GetString("image"),
                                     SupplierId = reader.IsDBNull(reader.GetOrdinal("supplier_id")) ? 0 : reader.GetInt32("supplier_id"),
                                     Supplier = new SupplierModel
                                     {
@@ -51,7 +52,6 @@ namespace SistemaFerredomos.src.Repositories.Main
                                     }
                                 });
                             }
-
                         }
                     }
                 }
@@ -62,6 +62,53 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
 
             return materials;
+        }
+
+        // 🟢 Obtener material por ID
+        public MaterialModel GetById(int id)
+        {
+            try
+            {
+                using (var conn = _databaseService.GetConnection())
+                {
+                    conn.Open();
+                    using (var cmd = new MySqlCommand("GetMaterialById", conn))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@p_id", id);
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new MaterialModel
+                                {
+                                    Id = reader.GetInt32("id"),
+                                    Name = reader.GetString("name"),
+                                    Stock = reader.GetDecimal("stock"),
+                                    PurchasePrice = reader.GetDecimal("purchase_price"),
+                                    SalePrice = reader.GetDecimal("sale_price"),
+                                    Image = reader.IsDBNull(reader.GetOrdinal("image")) ? null : reader.GetString("image"),
+                                    SupplierId = reader.IsDBNull(reader.GetOrdinal("supplier_id")) ? 0 : reader.GetInt32("supplier_id"),
+                                    Supplier = new SupplierModel
+                                    {
+                                        Id = reader.IsDBNull(reader.GetOrdinal("supplier_id")) ? 0 : reader.GetInt32("supplier_id"),
+                                        Name = reader.IsDBNull(reader.GetOrdinal("supplier_name")) ? "" : reader.GetString("supplier_name"),
+                                        Phone = reader.IsDBNull(reader.GetOrdinal("phone")) ? "" : reader.GetString("phone"),
+                                        Address = reader.IsDBNull(reader.GetOrdinal("address")) ? "" : reader.GetString("address")
+                                    }
+                                };
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Error al obtener material por ID: " + ex.Message);
+            }
+
+            return null;
         }
 
         // 🟢 Agregar material
@@ -80,6 +127,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                         cmd.Parameters.AddWithValue("@p_purchase_price", material.PurchasePrice);
                         cmd.Parameters.AddWithValue("@p_sale_price", material.SalePrice);
                         cmd.Parameters.AddWithValue("@p_supplier_id", material.SupplierId);
+                        cmd.Parameters.AddWithValue("@p_image", material.Image ?? (object)DBNull.Value);
 
                         return cmd.ExecuteNonQuery() > 0;
                     }
@@ -92,7 +140,7 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
         }
 
-        // 🟡 Actualizar material
+        // Actualizar material
         public bool Update(MaterialModel material)
         {
             try
@@ -109,6 +157,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                         cmd.Parameters.AddWithValue("@p_purchase_price", material.PurchasePrice);
                         cmd.Parameters.AddWithValue("@p_sale_price", material.SalePrice);
                         cmd.Parameters.AddWithValue("@p_supplier_id", material.SupplierId);
+                        cmd.Parameters.AddWithValue("@p_image", material.Image ?? (object)DBNull.Value);
 
                         return cmd.ExecuteNonQuery() > 0;
                     }
@@ -121,7 +170,7 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
         }
 
-        // 🔴 Eliminar material
+        // Eliminar material
         public bool Delete(int id)
         {
             try
@@ -145,7 +194,7 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
         }
 
-        //metodo para obtener todos los proveedores
+        // Método para obtener todos los proveedores
         public List<SupplierModel> GetSuppliers()
         {
             var suppliers = new List<SupplierModel>();
@@ -157,7 +206,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                     conn.Open();
                     using (var cmd = new MySqlCommand("GetAllSuppliers", conn))
                     {
-                        cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                        cmd.CommandType = CommandType.StoredProcedure;
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -182,6 +231,5 @@ namespace SistemaFerredomos.src.Repositories.Main
 
             return suppliers;
         }
-
     }
 }

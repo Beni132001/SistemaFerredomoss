@@ -120,26 +120,35 @@ namespace SistemaFerredomos.src.ViewModels.Main
                     NavViewType.Home => new HomeViewModel(),
                     NavViewType.NewOrders => new NewOrdersViewModel(),
                     NavViewType.OrdersReview => new OrdersReviewViewModel(),
-                    NavViewType.NewPOrders=> new NewPOrdersViewModel(),
-                    NavViewType.POrdersReview=>new POrdersReviewViewModel(),
+                    NavViewType.NewPOrders => new NewPOrdersViewModel(),
+                    NavViewType.POrdersReview => new POrdersReviewViewModel(),
 
-                    NavViewType.MaterialInventory=>new MaterialInventoryViewModel(new MaterialRepository(), _currentUser.IsAdmin),
-                    NavViewType.ProductsInventory=>new ProductsInventoryViewModel(new ProductsRepository(), _currentUser.IsAdmin),
+                    NavViewType.MaterialInventory => new MaterialInventoryViewModel(new MaterialRepository(), _currentUser.IsAdmin),
+                    NavViewType.ProductsInventory => new ProductsInventoryViewModel(new ProductsRepository(), _currentUser.IsAdmin),
 
-                    NavViewType.Materials => new AddEditMaterialViewModel(null, RefreshInventory, new MaterialRepository()),
-                    NavViewType.Products => new AddEditProductViewModel(null, RefreshInventory, new ProductsRepository()),
+                    // CORREGIDO: Agregar null para onCancel
+                    NavViewType.Materials => new AddEditMaterialViewModel(
+                        material: null,
+                        onSave: RefreshInventory,
+                        onCancel: null,
+                        repository: new MaterialRepository()
+                    ),
 
-                    NavViewType.Glass=>new GlassViewModel(),
-                    NavViewType.Domes=>new DomesViewModel(),
-                    NavViewType.Windows=>new WindowsViewModel(),
-                    NavViewType.Door=>new DoorViewModel(),
-                   // NavViewType.Products=>new ProductsViewModel(),
-                    //NavViewType.Materials=>new MaterialsViewModel(),
-                    NavViewType.Suppliers=>new SupplierViewModel(),
-                    NavViewType.Desing=>new DesingViewModel(),
-                    NavViewType.Activity=>new ActivityViewModel(),
-                    NavViewType.Users=> new UsersViewModel(),
+                    // CORREGIDO: Agregar null para onCancel  
+                    NavViewType.Products => new AddEditProductViewModel(
+                        product: null,
+                        onSave: RefreshInventory,
+                        repository: new ProductsRepository()
+                    ),
 
+                    NavViewType.Glass => new GlassViewModel(),
+                    NavViewType.Domes => new DomesViewModel(),
+                    NavViewType.Windows => new WindowsViewModel(),
+                    NavViewType.Door => new DoorViewModel(),
+                    NavViewType.Suppliers => new SupplierViewModel(),
+                    NavViewType.Desing => new DesingViewModel(),
+                    NavViewType.Activity => new ActivityViewModel(),
+                    NavViewType.Users => new UsersViewModel(),
 
                     _ => new HomeViewModel()
                 };
@@ -186,8 +195,6 @@ namespace SistemaFerredomos.src.ViewModels.Main
        Activity,
 
        Users,
-
-       
       
     }
 

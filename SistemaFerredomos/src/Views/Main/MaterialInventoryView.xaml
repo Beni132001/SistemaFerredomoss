@@ -4,12 +4,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:converters="clr-namespace:SistemaFerredomos.src.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter"/>
+    </UserControl.Resources>
 
     <Grid Margin="10">
         <StackPanel>
-
             <!-- Fila superior con buscador y botón de agregar -->
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,10">
                 <TextBox Width="200" Height="28" 
@@ -19,24 +24,41 @@
 
                 <Button Content="Agregar Material"
                         Command="{Binding AddCommand}"
-                        Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Width="150"/>
+                        Width="150"
+                        x:Name="btnAgregarMaterial"/>
             </StackPanel>
 
             <!-- DataGrid de Materiales -->
-            <DataGrid ItemsSource="{Binding Materials}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedMaterial}"
-                      CanUserAddRows="False" CanUserDeleteRows="False">
+            <DataGrid x:Name="dgMaterials"
+                      ItemsSource="{Binding FilteredMaterials}"
+                      AutoGenerateColumns="False"
+                      SelectedItem="{Binding SelectedMaterial}"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      IsReadOnly="True">
 
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+
+                    <!-- Columna de Imagen -->
+                    <DataGridTemplateColumn Header="Imagen" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding Image, Converter={StaticResource ImagePathToBitmapConverter}}"
+                                       Width="40" Height="40" 
+                                       Stretch="Uniform"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
                     <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
                     <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
-                    <DataGridTextColumn Header="Precio Compra" Binding="{Binding PurchasePrice}" Width="100"/>
+                    <DataGridTextColumn x:Name="colPrecioCompra" Header="Precio Compra" Binding="{Binding PurchasePrice}" Width="100"/>
                     <DataGridTextColumn Header="Precio Venta" Binding="{Binding SalePrice}" Width="100"/>
                     <DataGridTextColumn Header="Proveedor" Binding="{Binding Supplier.Name}" Width="150"/>
 
-                    <!-- Botones de acción por fila -->
-                    <DataGridTemplateColumn Header="Acciones" Width="150">
+                    <!-- Columna de acciones -->
+                    <DataGridTemplateColumn x:Name="colAcciones" Header="Acciones" Width="150">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -50,10 +72,8 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
                 </DataGrid.Columns>
             </DataGrid>
-
         </StackPanel>
     </Grid>
 </UserControl>

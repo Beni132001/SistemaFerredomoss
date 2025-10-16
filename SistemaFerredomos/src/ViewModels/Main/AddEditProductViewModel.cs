@@ -1,30 +1,49 @@
 ﻿using SistemaFerredomos.src.Models;
 using SistemaFerredomos.src.Repositories.Main;
+using SistemaFerredomos.src.Services;
 using SistemaFerredomos.src.ViewModels.Commons;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace SistemaFerredomos.src.ViewModels.Main
 {
     public class AddEditProductViewModel : BaseViewModel
     {
         private readonly ProductsRepository _repository;
+        private readonly ImageService _imageService;
+        private readonly Action _onSave;
+        private readonly Action _onCancel;
 
-        public AddEditProductViewModel(ProductsModel product, Action onSave, ProductsRepository repository = null)
+        private BitmapImage _productImage;
+        private string _imageFileName;
+        private string _name;
+        private int _stock;
+        private decimal _purchasePrice;
+        private decimal _salePrice;
+        private SupplierModel _selectedSupplier;
+
+        public AddEditProductViewModel(ProductsModel product = null, Action onSave = null, Action onCancel = null, ProductsRepository repository = null)
         {
             _repository = repository ?? new ProductsRepository();
+            _imageService = new ImageService();
+            _onSave = onSave;
+            _onCancel = onCancel;
 
             Suppliers = new ObservableCollection<SupplierModel>(_repository.GetSuppliers());
 
-            SaveCommand = new RelayCommand(o =>
-            {
-                SaveProduct();
-                onSave?.Invoke();
-            }, o => CanSave());
+            // Inicializar comandos
+            SaveCommand = new RelayCommand(o => SaveProduct(), o => CanSave());
+            CancelCommand = new RelayCommand(o => _onCancel?.Invoke());
+            SelectImageCommand = new RelayCommand(o => SelectImage());
+            RemoveImageCommand = new RelayCommand(o => RemoveImage());
 
-            // Inicializar campos si es edición
+            // Establecer imagen por defecto inmediatamente
+            ProductImage = _imageService.GetDefaultImage();
+
+            // Si es edición, cargar datos existentes
             if (product != null)
             {
                 ProductId = product.Id;
@@ -32,61 +51,183 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 Stock = product.Stock;
                 PurchasePrice = product.PurchasePrice;
                 SalePrice = product.SalePrice;
-                Image = product.Image;
                 SelectedSupplier = Suppliers.FirstOrDefault(s => s.Id == product.SupplierId);
+                _imageFileName = product.Image;
+                ImageFileName = product.Image;
+
+                // Cargar imagen si existe
+                if (!string.IsNullOrEmpty(product.Image))
+                {
+                    ProductImage = _imageService.LoadImage(product.Image);
+                }
             }
         }
 
-        // Propiedades para binding
+        public int ProductId { get; set; }
         public ObservableCollection<SupplierModel> Suppliers { get; set; }
 
-        private string _name;
-        public string Name { get => _name; set => SetProperty(ref _name, value); }
+        // Propiedades para binding
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (SetProperty(ref _name, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
-        private decimal _stock;
-        public decimal Stock { get => _stock; set => SetProperty(ref _stock, value); }
+        public int Stock
+        {
+            get => _stock;
+            set
+            {
+                if (SetProperty(ref _stock, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
-        private decimal _purchasePrice;
-        public decimal PurchasePrice { get => _purchasePrice; set => SetProperty(ref _purchasePrice, value); }
+        public decimal PurchasePrice
+        {
+            get => _purchasePrice;
+            set
+            {
+                if (SetProperty(ref _purchasePrice, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
-        private decimal _salePrice;
-        public decimal SalePrice { get => _salePrice; set => SetProperty(ref _salePrice, value); }
+        public decimal SalePrice
+        {
+            get => _salePrice;
+            set
+            {
+                if (SetProperty(ref _salePrice, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
-        private SupplierModel _selectedSupplier;
-        public SupplierModel SelectedSupplier { get => _selectedSupplier; set => SetProperty(ref _selectedSupplier, value); }
+        public SupplierModel SelectedSupplier
+        {
+            get => _selectedSupplier;
+            set
+            {
+                if (SetProperty(ref _selectedSupplier, value))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            }
+        }
 
-        private string _image;
-        public string Image { get => _image; set => SetProperty(ref _image, value); }
+        public BitmapImage ProductImage
+        {
+            get => _productImage;
+            set => SetProperty(ref _productImage, value);
+        }
 
-        public int ProductId { get; set; } // Para edición
+        public string ImageFileName
+        {
+            get => _imageFileName;
+            set => SetProperty(ref _imageFileName, value);
+        }
 
+        public string Title => ProductId == 0 ? "AGREGAR NUEVO PRODUCTO" : "EDITAR PRODUCTO";
+
+        // Comandos
         public ICommand SaveCommand { get; set; }
+        public ICommand CancelCommand { get; set; }
+        public ICommand SelectImageCommand { get; set; }
+        public ICommand RemoveImageCommand { get; set; }
 
-        private bool CanSave() => !string.IsNullOrWhiteSpace(Name) && SelectedSupplier != null;
+        private void SelectImage()
+        {
+            try
+            {
+                var newImageFileName = _imageService.SelectAndSaveImage();
+                if (!string.IsNullOrEmpty(newImageFileName))
+                {
+                    // Eliminar imagen anterior si existe
+                    if (!string.IsNullOrEmpty(_imageFileName))
+                    {
+                        _imageService.DeleteImage(_imageFileName);
+                    }
+
+                    _imageFileName = newImageFileName;
+                    ImageFileName = _imageFileName;
+                    ProductImage = _imageService.LoadImage(_imageFileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error al seleccionar imagen: {ex.Message}", "Error",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+        }
+
+        private void RemoveImage()
+        {
+            if (!string.IsNullOrEmpty(_imageFileName))
+            {
+                _imageService.DeleteImage(_imageFileName);
+                _imageFileName = null;
+                ImageFileName = null;
+            }
+            ProductImage = _imageService.GetDefaultImage();
+        }
+
+        private bool CanSave()
+        {
+            return !string.IsNullOrWhiteSpace(Name) &&
+                   SelectedSupplier != null &&
+                   Stock >= 0 &&
+                   PurchasePrice >= 0 &&
+                   SalePrice >= 0;
+        }
 
         private void SaveProduct()
         {
-            var product = new ProductsModel
+            try
             {
-                Id = ProductId,
-                Name = Name,
-                Stock = Stock,
-                PurchasePrice = PurchasePrice,
-                SalePrice = SalePrice,
-                SupplierId = SelectedSupplier?.Id ?? 0,
-                Image = Image
-            };
+                var product = new ProductsModel
+                {
+                    Id = ProductId,
+                    Name = Name.Trim(),
+                    Stock = Stock,
+                    PurchasePrice = PurchasePrice,
+                    SalePrice = SalePrice,
+                    SupplierId = SelectedSupplier?.Id ?? 0,
+                    Image = _imageFileName
+                };
 
-            bool success;
-            if (ProductId == 0)
-                success = _repository.Add(product);
-            else
-                success = _repository.Update(product);
+                bool success = ProductId == 0 ?
+                    _repository.Add(product) :
+                    _repository.Update(product);
 
-            if (success)
-                System.Windows.MessageBox.Show("✅ Producto guardado correctamente");
-            else
-                System.Windows.MessageBox.Show("❌ Error al guardar producto");
+                if (success)
+                {
+                    System.Windows.MessageBox.Show("✅ Producto guardado correctamente", "Éxito",
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    _onSave?.Invoke();
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("❌ Error al guardar producto", "Error",
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"❌ Error: {ex.Message}", "Error",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
     }
 }

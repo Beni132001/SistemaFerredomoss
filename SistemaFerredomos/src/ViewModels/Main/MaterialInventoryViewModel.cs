@@ -81,15 +81,31 @@ namespace SistemaFerredomos.src.ViewModels.Main
         // Abrir ventana de agregar/editar
         private void OpenAddEditMaterial(MaterialModel material)
         {
-            var vm = new AddEditMaterialViewModel(material, LoadMaterials, _repository);
+            System.Windows.Window window = null;
+
+            var vm = new AddEditMaterialViewModel(
+                material: material,
+                onSave: () =>
+                {
+                    LoadMaterials();
+                    window?.Close();
+                },
+                onCancel: () =>
+                {
+                    window?.Close();
+                },
+                repository: _repository
+            );
+
             var view = new AddEditMaterialView { DataContext = vm };
 
-            var window = new System.Windows.Window
+            window = new System.Windows.Window
             {
                 Content = view,
                 Title = material == null ? "Agregar Material" : "Editar Material",
                 SizeToContent = System.Windows.SizeToContent.WidthAndHeight,
-                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen
+                WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen,
+                ResizeMode = System.Windows.ResizeMode.NoResize
             };
             window.ShowDialog();
         }

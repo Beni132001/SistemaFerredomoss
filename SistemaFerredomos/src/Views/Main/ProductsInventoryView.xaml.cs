@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaFerredomos.src.ViewModels.Main;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,20 @@ namespace SistemaFerredomos.src.Views.Main
         public ProductsInventoryView()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is ProductsInventoryViewModel vm)
+            {
+                // Oculta columnas y botones si el usuario NO es admin
+                if (!vm.IsAdmin)
+                {
+                    colAcciones.Visibility = Visibility.Collapsed;
+                    btnAgregarProducto.Visibility = Visibility.Collapsed;
+                    colPrecioCompra.Visibility = Visibility.Collapsed;
+                }
+            }
         }
     }
 }

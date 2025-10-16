@@ -3,8 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:conv="clr-namespace:SistemaFerredomos.src.Converters"
+             xmlns:converters="clr-namespace:SistemaFerredomos.src.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="UserControl_Loaded">
+
+    <UserControl.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter"/>
+    </UserControl.Resources>
 
     <Grid Margin="10">
         <Grid.RowDefinitions>
@@ -12,42 +20,80 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <!-- Fila superior: buscador + botón Agregar (solo admin) -->
+        <!-- Buscador + botón Agregar (solo admin) -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,10">
             <TextBox Width="260" Height="28"
-                         Margin="0,0,10,0"
-                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         VerticalContentAlignment="Center"
-                         ToolTip="Buscar por nombre..." />
+                     Margin="0,0,10,0"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center"
+                     ToolTip="Buscar por nombre o proveedor..." />
             <Button Content="➕ Agregar Producto"
-                        Command="{Binding AddCommand}"
-                        Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"
-                        Width="150" Height="30"/>
+                    Command="{Binding AddCommand}"
+                    Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"
+                    Width="150" Height="30"
+                    x:Name="btnAgregarProducto"/>
         </StackPanel>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Products}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <!-- Tabla de productos -->
+        <DataGrid x:Name="ProductsDataGrid"
+                  Grid.Row="1"
+                  ItemsSource="{Binding FilteredProducts}"
+                  AutoGenerateColumns="False"
+                  SelectedItem="{Binding SelectedProduct}"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True"
+                  Margin="0,10,0,0">
+
             <DataGrid.Columns>
                 <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
-                <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
-                <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
-                <DataGridTextColumn Header="Precio Compra" Binding="{Binding PurchasePrice}" Width="100"/>
-                <DataGridTextColumn Header="Precio Venta" Binding="{Binding SalePrice}" Width="100"/>
-                <DataGridTextColumn Header="Proveedor" Binding="{Binding Supplier.Name}" Width="*"/>
-                <DataGridTextColumn Header="Imagen" Binding="{Binding Image}" Width="120"/>
 
-                <DataGridTemplateColumn Header="Acciones" Width="150">
+                <!-- Columna de Imagen -->
+                <DataGridTemplateColumn Header="Imagen" Width="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="Editar" Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}" Margin="2"/>
-                                <Button Content="Eliminar" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                        CommandParameter="{Binding}" Margin="2"/>
-                            </StackPanel>
+                            <Border BorderBrush="LightGray" BorderThickness="1" 
+                                    Background="White" Margin="2">
+                                <Image Source="{Binding Image, Converter={StaticResource ImagePathToBitmapConverter}}"
+                                       Width="40" Height="40" 
+                                       Stretch="Uniform"/>
+                            </Border>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
 
+                <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
+                <DataGridTextColumn x:Name="colPrecioCompra" Header="Precio Compra" 
+                                   Binding="{Binding PurchasePrice, StringFormat=C}" Width="100"/>
+                <DataGridTextColumn Header="Precio Venta" 
+                                   Binding="{Binding SalePrice, StringFormat=C}" Width="100"/>
+                <DataGridTextColumn Header="Proveedor" Binding="{Binding Supplier.Name}" Width="*"/>
+
+                <!-- Columna Acciones (oculta si no es admin) -->
+                <DataGridTemplateColumn x:Name="colAcciones"
+                                        Header="Acciones"
+                                        Width="150">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="✏️ Editar"
+                                        Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        Margin="2" Padding="8,2"
+                                        ToolTip="Editar producto"
+                                        Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                <Button Content="🗑️ Eliminar"
+                                        Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        Margin="2" Padding="8,2"
+                                        Background="#FFDC3545" Foreground="White"
+                                        ToolTip="Eliminar producto"
+                                        Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

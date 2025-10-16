@@ -46,7 +46,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void OpenAddEditView(ProductsModel product)
         {
-            var addEditVM = new AddEditProductViewModel(product, RefreshProducts, _repository);
+            var addEditVM = new AddEditProductViewModel(product, RefreshProducts, null, _repository);
 
             var addEditView = new Views.Main.AddEditProductView
             {

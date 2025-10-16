@@ -16,5 +16,6 @@ namespace SistemaFerredomos.src.Models
         public int SupplierId { get; set; }
 
         public SupplierModel Supplier { get; set; }
+        public string Image { get; set; }
     }
 }
