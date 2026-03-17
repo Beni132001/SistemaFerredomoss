@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.Models
 {
-    class OrdersModel
+    public class OrdersModel
     {
         public int Id { get; set; }
         public int UserId { get; set; }

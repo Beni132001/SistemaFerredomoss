@@ -6,7 +6,129 @@
              xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <TextBlock Text="{Binding mensaje}"/>
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Dashboard Ferredomos"
+               FontSize="24"
+               FontWeight="Bold"
+               Margin="0,0,0,20"/>
+
+        <UniformGrid Grid.Row="1"
+                 Columns="2"
+                 Rows="2"
+                 Margin="10"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top">
+
+            <!-- Ordenes Hoy -->
+            <Border Background="#3498db"
+                CornerRadius="10"
+                Margin="10"
+                Padding="20">
+
+                <StackPanel>
+                    <TextBlock Text="Órdenes Hoy"
+                           FontSize="16"
+                           Foreground="White"/>
+                    <TextBlock Text="{Binding Stats.OrdersToday}"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+                </StackPanel>
+
+            </Border>
+
+            <!-- Pendientes -->
+            <Border Background="#f39c12"
+                CornerRadius="10"
+                Margin="10"
+                Padding="20">
+
+                <StackPanel>
+                    <TextBlock Text="Órdenes Pendientes"
+                           FontSize="16"
+                           Foreground="White"/>
+                    <TextBlock Text="{Binding Stats.PendingOrders}"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+                </StackPanel>
+
+            </Border>
+
+            <!-- Materiales bajos -->
+            <Border Background="#e74c3c"
+                CornerRadius="10"
+                Margin="10"
+                Padding="20">
+
+                <StackPanel>
+                    <TextBlock Text="Materiales Bajos"
+                           FontSize="16"
+                           Foreground="White"/>
+                    <TextBlock Text="{Binding Stats.LowMaterials}"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+                </StackPanel>
+
+            </Border>
+
+            <!-- Ventas -->
+            <Border Background="#2ecc71"
+                CornerRadius="10"
+                Margin="10"
+                Padding="20">
+
+                <StackPanel>
+                    <TextBlock Text="Ventas Hoy"
+                           FontSize="16"
+                           Foreground="White"/>
+                    <TextBlock Text="{Binding Stats.TodaySales,StringFormat=C}"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="White"/>
+                </StackPanel>
+
+            </Border>
+
+        </UniformGrid>
+
+        <!-- LISTA DE MATERIALES BAJOS -->
+
+        <StackPanel Grid.Row="2" Margin="10">
+
+            <TextBlock Text="⚠ Materiales con stock bajo"
+           FontSize="18"
+           FontWeight="Bold"
+           Margin="0,20,0,10"/>
+
+            <DataGrid ItemsSource="{Binding LowStockMaterials}"
+          AutoGenerateColumns="False"
+          Height="200"
+          CanUserAddRows="False">
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="Material"
+                    Binding="{Binding Name}"
+                    Width="*"/>
+
+                    <DataGridTextColumn Header="Stock"
+                    Binding="{Binding Stock}"
+                    Width="120"/>
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+
+        </StackPanel>
+
     </Grid>
 </UserControl>

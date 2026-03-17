@@ -79,8 +79,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
             POrdersMenu.Children.Add(new NavItem { Title = "Revision de pedido", ViewType = NavViewType.POrdersReview });
 
             var InventorysMenu = new NavItem { Title = "Inventario", ViewType = NavViewType.Inventorys };
-            InventorysMenu.Children.Add(new NavItem { Title="Iventario de materiales", ViewType=NavViewType.MaterialInventory });
-            InventorysMenu.Children.Add(new NavItem { Title = "Iventario de productos", ViewType = NavViewType.ProductsInventory });
+            InventorysMenu.Children.Add(new NavItem { Title = "Inventario de materiales", ViewType = NavViewType.MaterialInventory });
+            InventorysMenu.Children.Add(new NavItem { Title = "Inventario de productos", ViewType = NavViewType.ProductsInventory });
 
             var DesingsMenu = new NavItem { Title = "Diseños", ViewType = NavViewType.Desings };
             DesingsMenu.Children.Add(new NavItem { Title = "Vidrios", ViewType = NavViewType.Glass });
@@ -118,15 +118,18 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 CurrentView = viewType switch
                 {
                     NavViewType.Home => new HomeViewModel(),
+
+                    //Ordenes
                     NavViewType.NewOrders => new NewOrdersViewModel(),
                     NavViewType.OrdersReview => new OrdersReviewViewModel(),
-                    NavViewType.NewPOrders => new NewPOrdersViewModel(),
+                    //pedido proveedor
+                    NavViewType.NewPOrders => new NewSupplierOrderViewModel(),
                     NavViewType.POrdersReview => new POrdersReviewViewModel(),
-
+                    //Inventario
                     NavViewType.MaterialInventory => new MaterialInventoryViewModel(new MaterialRepository(), _currentUser.IsAdmin),
                     NavViewType.ProductsInventory => new ProductsInventoryViewModel(new ProductsRepository(), _currentUser.IsAdmin),
 
-                    // CORREGIDO: Agregar null para onCancel
+                    // agregar
                     NavViewType.Materials => new AddEditMaterialViewModel(
                         material: null,
                         onSave: RefreshInventory,
@@ -134,17 +137,19 @@ namespace SistemaFerredomos.src.ViewModels.Main
                         repository: new MaterialRepository()
                     ),
 
-                    // CORREGIDO: Agregar null para onCancel  
+                    //Agregar null para onCancel  
                     NavViewType.Products => new AddEditProductViewModel(
                         product: null,
                         onSave: RefreshInventory,
                         repository: new ProductsRepository()
                     ),
 
-                    NavViewType.Glass => new GlassViewModel(),
-                    NavViewType.Domes => new DomesViewModel(),
-                    NavViewType.Windows => new WindowsViewModel(),
-                    NavViewType.Door => new DoorViewModel(),
+                    //diseños
+                    NavViewType.Glass => new ProductionViewModel("vidrios"),
+                    NavViewType.Domes => new ProductionViewModel("domos"),
+                    NavViewType.Windows => new ProductionViewModel("ventanas"),
+                    NavViewType.Door => new ProductionViewModel("puertas"),
+                    //otros
                     NavViewType.Suppliers => new SupplierViewModel(),
                     NavViewType.Desing => new DesingViewModel(),
                     NavViewType.Activity => new ActivityViewModel(),

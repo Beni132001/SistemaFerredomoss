@@ -224,5 +224,47 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
             return suppliers;
         }
+
+        public void UpdateStock(int productId, int quantity)
+        {
+            try
+            {
+                using (var conn = _databaseService.GetConnection())
+                {
+                    conn.Open();
+
+                    string query = @"UPDATE products 
+                             SET stock = stock - @quantity 
+                             WHERE id = @productId";
+
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@quantity", quantity);
+                        cmd.Parameters.AddWithValue("@productId", productId);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al actualizar stock: " + ex.Message);
+            }
+        }
+
+        //metodo para contar aumentar en stock
+        public void IncreaseStock(int productId, int quantity)
+        {
+            using var connection = _databaseService.GetConnection();
+            connection.Open();
+
+            string query = "UPDATE products SET stock = stock + @qty WHERE id=@id";
+
+            using var cmd = new MySqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@qty", quantity);
+            cmd.Parameters.AddWithValue("@id", productId);
+
+            cmd.ExecuteNonQuery();
+        }
     }
 }

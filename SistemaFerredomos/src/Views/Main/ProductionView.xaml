@@ -1,0 +1,153 @@
+﻿<UserControl x:Class="SistemaFerredomos.src.Views.Main.ProductionView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Margin="20">
+
+        <!-- FILAS -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <!-- Header -->
+            <RowDefinition Height="2*"/>
+            <!-- Producciones -->
+            <RowDefinition Height="Auto"/>
+            <!-- Texto materiales -->
+            <RowDefinition Height="2*"/>
+            <!-- Tabla materiales -->
+            <RowDefinition Height="Auto"/>
+            <!-- Agregar -->
+        </Grid.RowDefinitions>
+
+        <!-- HEADER (Título + botones)-->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Título -->
+            <TextBlock Text="Diseños de Producción"
+                       FontSize="22"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"/>
+
+            <!-- Botones -->
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal">
+
+                <Button Content="➕ Nuevo"
+                        Command="{Binding AddCommand}"
+                        Width="90"
+                        Margin="5"/>
+
+                <Button Content="✏️ Editar"
+                        Command="{Binding EditCommand}"
+                        Width="90"
+                        Margin="5"
+                        IsEnabled="{Binding SelectedProduction}"/>
+
+                <Button Content="🗑️ Eliminar"
+                        Command="{Binding DeleteCommand}"
+                        Width="90"
+                        Margin="5"
+                        IsEnabled="{Binding SelectedProduction}"/>
+
+            </StackPanel>
+        </Grid>
+
+        <!-- PRODUCCIONES -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Productions}"
+                  SelectedItem="{Binding SelectedProduction}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  Margin="0,10,0,10">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="Nombre"
+                                    Binding="{Binding Name}"
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="Tipo"
+                                    Binding="{Binding Type}"
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Precio"
+                                    Binding="{Binding Price,StringFormat=C}"
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Altura"
+                                    Binding="{Binding Height}"
+                                    Width="100"/>
+
+                <DataGridTextColumn Header="Ancho"
+                                    Binding="{Binding Width}"
+                                    Width="100"/>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <!-- MATERIALES -->
+        <TextBlock Grid.Row="2"
+                   Text="Materiales del diseño"
+                   FontWeight="Bold"
+                   Margin="0,10,0,5"/>
+
+        <DataGrid Grid.Row="3"
+                  ItemsSource="{Binding Materials}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  Margin="0,0,0,10">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="Material"
+                                    Binding="{Binding Material.Name}"
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="Cantidad"
+                                    Binding="{Binding Quantity}"
+                                    Width="120"/>
+
+                <DataGridTemplateColumn Header="Eliminar" Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="🗑"
+                                    Command="{Binding DataContext.RemoveMaterialCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Background="#e74c3c"
+                                    Foreground="White"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <!-- AGREGAR MATERIAL -->
+        <StackPanel Grid.Row="4"
+                    Orientation="Horizontal"
+                    Margin="0,10,0,0">
+
+            <ComboBox Width="220"
+                      ItemsSource="{Binding AllMaterials}"
+                      SelectedItem="{Binding SelectedMaterial}"
+                      DisplayMemberPath="Name"/>
+
+            <TextBox Width="80"
+                     Margin="10,0,0,0"
+                     Text="{Binding Quantity}"/>
+
+            <Button Content="Agregar"
+                    Command="{Binding AddMaterialCommand}"
+                    Margin="10,0,0,0"
+                    Width="100"/>
+
+        </StackPanel>
+
+    </Grid>
+
+</UserControl>

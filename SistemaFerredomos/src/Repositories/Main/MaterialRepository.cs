@@ -231,5 +231,138 @@ namespace SistemaFerredomos.src.Repositories.Main
 
             return suppliers;
         }
+
+        public void UpdateStock(int materialId, decimal quantity)
+        {
+            using (var conn = _databaseService.GetConnection())
+            {
+                conn.Open();
+
+                string query = @"UPDATE materials
+                         SET stock = stock - @quantity
+                         WHERE id = @id";
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@quantity", quantity);
+                    cmd.Parameters.AddWithValue("@id", materialId);
+
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public decimal GetStock(int materialId)
+        {
+            using (var conn = _databaseService.GetConnection())
+            {
+                conn.Open();
+
+                string query = "SELECT stock FROM materials WHERE id=@id";
+
+                using (var cmd = new MySqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", materialId);
+
+                    var result = cmd.ExecuteScalar();
+
+                    if (result != null)
+                        return Convert.ToDecimal(result);
+
+                    return 0;
+                }
+            }
+        }
+
+        public void UpdateStock(string materialName, decimal quantity)
+        {
+            using (var connection = _databaseService.GetConnection())
+            {
+                connection.Open();
+
+                string query = @"
+        UPDATE materials
+        SET stock = stock - @quantity
+        WHERE name = @name";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@quantity", quantity);
+                    command.Parameters.AddWithValue("@name", materialName);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        //contar materiales bajos
+        public int GetLowStockCount()
+        {
+            using (var connection = _databaseService.GetConnection())
+            {
+                connection.Open();
+
+                string query =
+                "SELECT COUNT(*) FROM materials WHERE stock < 5";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    return Convert.ToInt32(command.ExecuteScalar());
+                }
+            }
+        }
+        //metodo para contar aumentar en stock
+        public void IncreaseStock(int materialId, decimal quantity)
+        {
+            using (var connection = _databaseService.GetConnection())
+            {
+                connection.Open();
+
+                string query = "UPDATE materials SET stock = stock + @qty WHERE id = @id";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@qty", quantity);
+                    command.Parameters.AddWithValue("@id", materialId);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        //para ver materiales con stock bajo
+        public List<MaterialModel> GetLowStockMaterials(decimal minStock = 5)
+        {
+            List<MaterialModel> materials = new List<MaterialModel>();
+
+            using (var connection = _databaseService.GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT * FROM materials WHERE stock <= @minStock";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@minStock", minStock);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            materials.Add(new MaterialModel
+                            {
+                                Id = reader.GetInt32("id"),
+                                Name = reader.GetString("name"),
+                                Stock = reader.GetDecimal("stock"),
+                                PurchasePrice = reader.GetDecimal("purchase_price"),
+                                SalePrice = reader.GetDecimal("sale_price")
+                            });
+                        }
+                    }
+                }
+            }
+
+            return materials;
+        }
     }
 }

@@ -50,6 +50,22 @@
             <local:UsersView/>
         </DataTemplate>
 
+        <DataTemplate DataType="{x:Type vm:NewOrdersViewModel}">
+            <local:NewOrdersView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:OrdersReviewViewModel}">
+            <local:OrdersReviewView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:NewSupplierOrderViewModel}">
+            <local:NewSupplierOrderView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type vm:ProductionViewModel}">
+            <local:ProductionView/>
+        </DataTemplate>
+
         <!-- Plantilla para el menú con submenús -->
         <HierarchicalDataTemplate DataType="{x:Type vm:NavItem}" ItemsSource="{Binding Children}">
             <Button Content="{Binding Title}" 
@@ -80,22 +96,6 @@
                           Background="Transparent"
                           BorderThickness="0"
                           Foreground="White"/>
-
-                <Button Content="Cerrar Sesión" 
-                        Command="{Binding LogoutCommand}"
-                        Style="{StaticResource LogoutButtonStyle}"
-                        Margin="10,20,10,10"/>
-
-                <ItemsControl ItemsSource="{Binding MenuItems}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding Title}" 
-                                    Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                    CommandParameter="{Binding ViewType}"
-                                    Style="{StaticResource MenuButtonStyle}"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
 
                 <Button Content="Cerrar Sesión" 
                         Command="{Binding LogoutCommand}"

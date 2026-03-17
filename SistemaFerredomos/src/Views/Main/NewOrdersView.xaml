@@ -3,10 +3,224 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+             d:DesignHeight="600" d:DesignWidth="900">
+
+    <Grid Margin="15">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- TITULO -->
+        <TextBlock Grid.Row="0"
+                   Text="Nueva Orden"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ===================== -->
+            <!-- CATALOGO PRODUCTOS -->
+            <!-- ===================== -->
+
+            <StackPanel Grid.Column="0" Margin="0,0,15,0">
+
+                <TextBlock Text="Buscar Producto"
+                           FontWeight="Bold"/>
+
+                <TextBox Height="30"
+                         Margin="0,5,0,10"
+                         Text="{Binding SearchProductText, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"
+                         FontSize="14"
+                         ToolTip="Buscar producto..." />
+
+                <DataGrid ItemsSource="{Binding FilteredCatalogProducts}"
+                          SelectedItem="{Binding SelectedCatalogProduct}"
+                          AutoGenerateColumns="False"
+                          Height="250"
+                          CanUserAddRows="False">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Header="ID"
+                                            Binding="{Binding Id}"
+                                            Width="60"/>
+
+                        <DataGridTextColumn Header="Producto"
+                                            Binding="{Binding Name}"
+                                            Width="*"/>
+
+                        <DataGridTextColumn Header="Precio"
+                                            Binding="{Binding SalePrice, StringFormat=C}"
+                                            Width="100"/>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+                <Button Content="Agregar Producto"
+                        Command="{Binding AddCatalogProductCommand}"
+                        Width="160"
+                        Height="35"
+                        Margin="0,10,0,0"/>
+
+            </StackPanel>
+
+            <!-- ===================== -->
+            <!-- ORDEN ACTUAL -->
+            <!-- ===================== -->
+
+            <StackPanel Grid.Column="1">
+
+                <!-- DATOS CLIENTE -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+
+                    <StackPanel Margin="0,0,20,0">
+                        <TextBlock Text="Cliente"/>
+                        <TextBox Width="200"
+                                 Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="Teléfono"/>
+                        <TextBox Width="150"
+                                 Text="{Binding CustomerPhone, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+
+                </StackPanel>
+
+                <!-- PRODUCTOS -->
+                <TextBlock Text="Productos de la Orden"
+                           FontWeight="Bold"
+                           Margin="0,10,0,5"/>
+
+                <DataGrid ItemsSource="{Binding OrderProducts}"
+                          AutoGenerateColumns="False"
+                          Height="150"
+                          CanUserAddRows="False">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Header="Producto"
+                                            Binding="{Binding Products.Name}"
+                                            Width="*"/>
+
+                        <DataGridTextColumn Header="Cantidad"
+                                            Binding="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="80"/>
+
+                        <DataGridTextColumn Header="Precio"
+                                            Binding="{Binding UnitPrice, StringFormat=C}"
+                                            Width="100"/>
+
+                        <DataGridTextColumn Header="Subtotal"
+                                            Binding="{Binding Subtotal, StringFormat=C}"
+                                            Width="120"/>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+                <!-- PRODUCCION -->
+                <TextBlock Text="Producción"
+                           FontWeight="Bold"
+                           Margin="0,10,0,5"/>
+
+                <Button Content="➕ Agregar Producción"
+                        Command="{Binding AddProductionCommand}"
+                        Width="180"
+                        Height="30"
+                        Margin="0,0,0,5"/>
+
+                <DataGrid ItemsSource="{Binding OrderProductions}"
+                          AutoGenerateColumns="False"
+                          Height="150"
+                          CanUserAddRows="False">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Header="Tipo"
+                                            Binding="{Binding Production.Type}"
+                                            Width="120"/>
+
+                        <DataGridTextColumn Header="Nombre"
+                                            Binding="{Binding Production.Name}"
+                                            Width="*"/>
+
+                        <DataGridTextColumn Header="Cantidad"
+                                            Binding="{Binding Quantity, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Width="80"/>
+
+                        <DataGridTextColumn Header="Precio"
+                                            Binding="{Binding UnitPrice, StringFormat=C}"
+                                            Width="100"/>
+
+                        <DataGridTextColumn Header="Subtotal"
+                                            Binding="{Binding Subtotal, StringFormat=C}"
+                                            Width="120"/>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+                <!-- MATERIALES NECESARIOS -->
+                <TextBlock Text="Materiales necesarios"
+                           FontWeight="Bold"
+                           Margin="0,15,0,5"/>
+
+                <DataGrid ItemsSource="{Binding RequiredMaterials}"
+                          AutoGenerateColumns="False"
+                          Height="120"
+                          CanUserAddRows="False">
+
+                    <DataGrid.Columns>
+
+                        <DataGridTextColumn Header="Material"
+                                            Binding="{Binding MaterialName}"
+                                            Width="*"/>
+
+                        <DataGridTextColumn Header="Cantidad"
+                                            Binding="{Binding Quantity}"
+                                            Width="120"/>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+            </StackPanel>
+
+        </Grid>
+
+        <!-- TOTAL -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,15,0,0">
+
+            <TextBlock Text="{Binding TotalPrice, StringFormat=Total: {0:C}}"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       Margin="0,0,20,0"
+                       VerticalAlignment="Center"/>
+
+            <Button Content="Guardar Orden"
+                    Command="{Binding SaveOrderCommand}"
+                    Width="160"
+                    Height="40"/>
+
+        </StackPanel>
+
     </Grid>
+
 </UserControl>

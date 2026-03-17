@@ -3,10 +3,102 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+             d:DesignHeight="500" d:DesignWidth="900">
+
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Titulo -->
+        <TextBlock Text="Revisión de Órdenes"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,15"/>
+
+        <!-- Tabla -->
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding Orders}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True">
+
+            <DataGrid.Columns>
+
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}"
+                                    Width="60"/>
+
+                <DataGridTextColumn Header="Cliente"
+                                    Binding="{Binding CustomerName}"
+                                    Width="200"/>
+
+                <DataGridTextColumn Header="Teléfono"
+                                    Binding="{Binding CustomerPhone}"
+                                    Width="150"/>
+
+                <DataGridTextColumn Header="Fecha"
+                                    Binding="{Binding Date}"
+                                    Width="150"/>
+
+                <DataGridTextColumn Header="Estado"
+                                    Binding="{Binding Status}"
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Total"
+                    Binding="{Binding TotalPrice, StringFormat=C}"
+                    Width="120"/>
+
+                <!-- Botones -->
+                <DataGridTemplateColumn Header="Acciones" Width="200">
+
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+
+                            <StackPanel Orientation="Horizontal">
+
+                                <Button Content="Completar"
+                                        Margin="2"
+                                        Command="{Binding DataContext.CompleteOrderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding Id}"/>
+
+                                <Button Content="Cancelar"
+                                        Margin="2"
+                                        Command="{Binding DataContext.CancelOrderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding Id}"/>
+
+                                <Button Content="Ver"
+                                        Margin="2"
+                                        Command="{Binding DataContext.ViewOrderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding Id}"/>
+                            </StackPanel>
+
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+
+                    
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="Eliminar" Width="90">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="🗑"
+                    Command="{Binding DataContext.DeleteOrderCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                    CommandParameter="{Binding Id}"
+                    Width="40"
+                    Height="25"
+                    Background="#e74c3c"
+                    Foreground="White"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
+
     </Grid>
 </UserControl>

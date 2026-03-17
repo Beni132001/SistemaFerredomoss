@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.Models
 {
-    class SupplierOrderModel
+    public class SupplierOrderModel
     {
-      public string Id { get; set; }
+        public int Id { get; set; }
         public int UserId { get; set; }
         public DateTime Date { get; set; }
         public int SupplierId { get; set; }
@@ -16,6 +16,6 @@ namespace SistemaFerredomos.src.Models
         public UserModel User { get; set; }
         public SupplierModel Supplier { get; set; }
         public List<SupplierOrderMaterialModel> Materials { get; set; } = new List<SupplierOrderMaterialModel>();
-        public List<SupplierOrderProductsModel> Products { get; set; } = new List<SupplierOrderProductsModel> { };
+        public List<SupplierOrderProductsModel> Products { get; set; } = new List<SupplierOrderProductsModel> ();
     }
 }

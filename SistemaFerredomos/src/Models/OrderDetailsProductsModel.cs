@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.Models
 {
-    class OrderDetailsProductsModel
+    public class OrderDetailsProductsModel
     {
         public int OrderId { get; set; }
         public int ProductId { get; set; }
@@ -14,5 +14,10 @@ namespace SistemaFerredomos.src.Models
         public decimal UnitPrice { get; set; }
         public OrdersModel Orders { get; set; }
         public ProductsModel Products { get; set; }
+
+        public decimal Subtotal
+        {
+            get { return Quantity * UnitPrice; }
+        }
     }
 }

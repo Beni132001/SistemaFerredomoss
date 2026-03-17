@@ -1,0 +1,63 @@
+﻿<Window x:Class="SistemaFerredomos.src.Views.Main.SelectProductionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Seleccionar Producción"
+        Height="400"
+        Width="600">
+
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Row="0"
+                 Height="30"
+                 Margin="0,0,0,10"
+                 Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalContentAlignment="Center"
+                 FontSize="14"
+                 ToolTip="Buscar producción..." />
+
+        <DataGrid Grid.Row="1"
+                  ItemsSource="{Binding FilteredProductions}"
+                  SelectedItem="{Binding SelectedProduction}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True"
+                  Margin="0,0,0,10">
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID"
+                                    Binding="{Binding Id}"
+                                    Width="60"/>
+
+                <DataGridTextColumn Header="Tipo"
+                                    Binding="{Binding Type}"
+                                    Width="120"/>
+
+                <DataGridTextColumn Header="Nombre"
+                                    Binding="{Binding Name}"
+                                    Width="*"/>
+
+                <DataGridTextColumn Header="Precio"
+                                    Binding="{Binding Price, StringFormat=C}"
+                                    Width="120"/>
+            </DataGrid.Columns>
+
+        </DataGrid>
+
+        <Button Grid.Row="2"
+                Content="Seleccionar"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Width="120"
+                Height="30"
+                Margin="0,10,0,0"
+                Click="Select_Click"/>
+
+    </Grid>
+
+</Window>
