@@ -1,7 +1,9 @@
 ﻿using SistemaFerredomos.src.Models;
 using SistemaFerredomos.src.Repositories.Main;
+using SistemaFerredomos.src.Services;
 using SistemaFerredomos.src.ViewModels.Commons;
 using SistemaFerredomos.src.Views.Main;
+using SistemaFerredomos.src.Services;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -17,6 +19,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private readonly MaterialRepository _materialRepository;
         private readonly ProductionRepository _productionRepository;
 
+        private readonly OrderProcessingService _orderService;
+
         public ObservableCollection<OrderDetailsProductsModel> OrderProducts { get; set; }
             = new ObservableCollection<OrderDetailsProductsModel>();      
 
@@ -27,6 +31,9 @@ namespace SistemaFerredomos.src.ViewModels.Main
         public ObservableCollection<ProductsModel> FilteredCatalogProducts { get; set; }
 
         public ObservableCollection<RequiredMaterialModel> RequiredMaterials { get; set; }
+    = new ObservableCollection<RequiredMaterialModel>();
+
+        public ObservableCollection<RequiredMaterialModel> MissingMaterials { get; set; }
     = new ObservableCollection<RequiredMaterialModel>();
 
         public ProductsModel SelectedCatalogProduct { get; set; }
@@ -59,6 +66,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
             _productionRepository = new ProductionRepository();
             _materialRepository = new MaterialRepository();
 
+            _orderService = new OrderProcessingService();
+
             SaveOrderCommand = new RelayCommand(SaveOrder);
             AddProductCommand = new RelayCommand(AddProduct);
 
@@ -81,8 +90,37 @@ namespace SistemaFerredomos.src.ViewModels.Main
         {
             try
             {
-                if (!ValidateMaterials())
+                if (!OrderProducts.Any() && !OrderProductions.Any())
+                {
+                    MessageBox.Show("Agrega al menos un producto o producción.");
                     return;
+                }
+
+                // 🔥 detectar faltantes antes
+                CheckMissingMaterials();
+
+                if (MissingMaterials.Any())
+                {
+                    var mensaje = "Faltan materiales:\n\n";
+
+                    foreach (var m in MissingMaterials)
+                    {
+                        mensaje += $"{m.MaterialName} → faltan {m.Quantity}\n";
+                    }
+
+                    mensaje += "\n¿Deseas continuar y generar pedido automáticamente?";
+
+                    var resultConfirm = MessageBox.Show(
+                        mensaje,
+                        "Material insuficiente",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning
+                    );
+
+                    if (resultConfirm != MessageBoxResult.Yes)
+                        return;
+                }
+
                 OrdersModel order = new OrdersModel
                 {
                     UserId = 1,
@@ -93,38 +131,20 @@ namespace SistemaFerredomos.src.ViewModels.Main
                     TotalPrice = TotalPrice
                 };
 
-                int orderId = _ordersRepository.CreateOrder(order);
+                var result = _orderService.ProcessOrder(
+                    order,
+                    OrderProductions.ToList(),
+                    OrderProducts.ToList()
+                );
 
-                // Guardar productos de la orden
-                _ordersRepository.SaveOrderProducts(orderId, OrderProducts.ToList());
-                _ordersRepository.SaveOrderProductions(orderId, OrderProductions.ToList());
+                MessageBox.Show(result);
 
-                // Actualizar inventario
-                foreach (var item in OrderProducts)
-                {
-                    _productsRepository.UpdateStock(item.ProductId, item.Quantity);
-                }
-
-                foreach (var production in OrderProductions)
-                {
-                    var materials = _productionRepository
-                        .CalculateMaterials(production.ProductionId, production.Quantity);
-
-                    foreach (var material in materials)
-                    {
-                        _materialRepository.UpdateStock(material.Key, material.Value);
-                    }
-                }
-
-                foreach (var material in RequiredMaterials)
-                {
-                    _materialRepository.UpdateStock(material.MaterialName, material.Quantity);
-                }
-
-                MessageBox.Show("Orden guardada correctamente");
-
-                // Limpiar orden
+                // 🔥 limpiar
                 OrderProducts.Clear();
+                OrderProductions.Clear();
+                RequiredMaterials.Clear();
+                MissingMaterials.Clear();
+
                 CustomerName = "";
                 CustomerPhone = "";
 
@@ -134,7 +154,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error al guardar la orden: " + ex.Message);
+                MessageBox.Show("Error al procesar la orden: " + ex.Message);
             }
         }
 
@@ -191,6 +211,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 OnPropertyChanged(nameof(TotalPrice));
             }
             CalculateMaterials();
+            CheckMissingMaterials();
         }
         private void RemoveProduction(object obj)
         {
@@ -198,38 +219,12 @@ namespace SistemaFerredomos.src.ViewModels.Main
             {
                 OrderProductions.Remove(item);
                 OnPropertyChanged(nameof(TotalPrice));
+
+                CalculateMaterials();
+                CheckMissingMaterials();
             }
         }
 
-        private bool ValidateMaterials()
-        {
-            foreach (var production in OrderProductions)
-            {
-                var materials = _productionRepository
-                    .CalculateMaterials(production.ProductionId, production.Quantity);
-
-                foreach (var material in materials)
-                {
-                    decimal stock = _materialRepository.GetStock(material.Key);
-
-                    if (stock < material.Value)
-                    {
-                        MessageBox.Show(
-                            $"No hay suficiente material.\n" +
-                            $"Material ID: {material.Key}\n" +
-                            $"Necesario: {material.Value}\n" +
-                            $"Disponible: {stock}",
-                            "Stock insuficiente",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Warning);
-
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
         //filtrar procutos
         private void FilterCatalogProducts()
         {
@@ -279,7 +274,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 foreach (var m in materials)
                 {
                     var existing = RequiredMaterials
-                        .FirstOrDefault(x => x.MaterialName == m.MaterialName);
+                        .FirstOrDefault(x => x.MaterialId == m.MaterialId); // 🔥 CAMBIO CLAVE
 
                     if (existing != null)
                     {
@@ -293,6 +288,29 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
 
             OnPropertyChanged(nameof(RequiredMaterials));
+        }
+
+        //metodo paraa detectar faltantes
+        private void CheckMissingMaterials()
+        {
+            MissingMaterials.Clear();
+
+            foreach (var material in RequiredMaterials)
+            {
+                decimal stock = _materialRepository.GetStock(material.MaterialId);
+
+                if (stock < material.Quantity)
+                {
+                    MissingMaterials.Add(new RequiredMaterialModel
+                    {
+                        MaterialId = material.MaterialId,
+                        MaterialName = material.MaterialName,
+                        Quantity = material.Quantity - stock
+                    });
+                }
+            }
+
+            OnPropertyChanged(nameof(MissingMaterials));
         }
     }
 }

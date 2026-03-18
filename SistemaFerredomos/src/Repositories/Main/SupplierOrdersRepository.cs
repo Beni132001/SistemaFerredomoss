@@ -46,21 +46,34 @@ namespace SistemaFerredomos.src.Repositories.Main
             {
                 connection.Open();
 
-                foreach (var item in materials)
+                using (var transaction = connection.BeginTransaction())
                 {
-                    string query = @"INSERT INTO supplier_order_materials
+                    try
+                    {
+                        foreach (var item in materials)
+                        {
+                            string query = @"INSERT INTO supplier_order_materials
                                     (supplier_order_id, material_id, quantity, unit_price)
                                     VALUES
                                     (@order_id, @material_id, @quantity, @price)";
 
-                    using (var command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@order_id", orderId);
-                        command.Parameters.AddWithValue("@material_id", item.MaterialId);
-                        command.Parameters.AddWithValue("@quantity", item.Quantity);
-                        command.Parameters.AddWithValue("@price", item.UnitPrice);
+                            using (var command = new MySqlCommand(query, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@order_id", orderId);
+                                command.Parameters.AddWithValue("@material_id", item.MaterialId);
+                                command.Parameters.AddWithValue("@quantity", item.Quantity);
+                                command.Parameters.AddWithValue("@price", item.UnitPrice);
 
-                        command.ExecuteNonQuery();
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
                     }
                 }
             }
@@ -73,21 +86,33 @@ namespace SistemaFerredomos.src.Repositories.Main
             {
                 connection.Open();
 
-                foreach (var item in products)
+                using (var transaction = connection.BeginTransaction())
                 {
-                    string query = @"INSERT INTO supplier_order_hardware_products
+                    try
+                    {
+                        foreach(var item in products)
+                        {
+                            string query = @"INSERT INTO supplier_order_hardware_products
                                     (supplier_order_id, products_id, quantity, unit_price)
                                     VALUES
                                     (@order_id, @product_id, @quantity, @price)";
 
-                    using (var command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@order_id", orderId);
-                        command.Parameters.AddWithValue("@product_id", item.ProductId);
-                        command.Parameters.AddWithValue("@quantity", item.Quantity);
-                        command.Parameters.AddWithValue("@price", item.UnitPrice);
+                            using (var command = new MySqlCommand(query, connection))
+                            {
+                                command.Parameters.AddWithValue("@order_id", orderId);
+                                command.Parameters.AddWithValue("@product_id", item.ProductId);
+                                command.Parameters.AddWithValue("@quantity", item.Quantity);
+                                command.Parameters.AddWithValue("@price", item.UnitPrice);
 
-                        command.ExecuteNonQuery();
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
                     }
                 }
             }
@@ -220,5 +245,30 @@ namespace SistemaFerredomos.src.Repositories.Main
 
             return products;
         }
+
+        //actualiza pecio total
+        public void UpdateTotalPrice(int orderId)
+        {
+            using (var connection = _databaseService.GetConnection())
+            {
+                connection.Open();
+
+                string query = @"
+        UPDATE supplier_orders
+        SET total_price = (
+            SELECT IFNULL(SUM(quantity * unit_price), 0)
+            FROM supplier_order_materials
+            WHERE supplier_order_id = @id
+        )
+        WHERE id = @id;";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", orderId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }

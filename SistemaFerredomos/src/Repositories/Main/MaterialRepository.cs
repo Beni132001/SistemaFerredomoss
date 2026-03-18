@@ -364,5 +364,25 @@ namespace SistemaFerredomos.src.Repositories.Main
 
             return materials;
         }
+
+        //CALCULA EL PRECIO TOTAL
+        public decimal GetPurchasePrice(int materialId)
+        {
+            using (var connection = _databaseService.GetConnection())
+            {
+                connection.Open();
+
+                string query = "SELECT purchase_price FROM materials WHERE id = @id";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@id", materialId);
+
+                    var result = command.ExecuteScalar();
+
+                    return result != null ? Convert.ToDecimal(result) : 0;
+                }
+            }
+        }
     }
 }

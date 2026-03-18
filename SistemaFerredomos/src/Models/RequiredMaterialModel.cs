@@ -8,6 +8,7 @@ namespace SistemaFerredomos.src.Models
 {
     public class RequiredMaterialModel
     {
+        public int MaterialId { get; set; }
         public string MaterialName { get; set; }
         public decimal Quantity { get; set; }
     }

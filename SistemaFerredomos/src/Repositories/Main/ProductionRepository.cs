@@ -139,7 +139,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                 connection.Open();
 
                 string query = @"
-        SELECT m.name, pm.quantity
+        SELECT m.id, m.name, pm.quantity
         FROM production_materials pm
         JOIN materials m ON pm.material_id = m.id
         WHERE pm.production_id = @productionId";
@@ -154,6 +154,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                         {
                             list.Add(new RequiredMaterialModel
                             {
+                                MaterialId = reader.GetInt32("id"),
                                 MaterialName = reader.GetString("name"),
                                 Quantity = reader.GetDecimal("quantity") * quantity
                             });
