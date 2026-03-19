@@ -1,134 +1,230 @@
 ﻿<UserControl x:Class="SistemaFerredomos.src.Views.Main.HomeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="20">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="550" d:DesignWidth="860">
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <TextBlock Text="Dashboard Ferredomos"
-               FontSize="24"
-               FontWeight="Bold"
-               Margin="0,0,0,20"/>
+            <!-- Header -->
+            <Border Grid.Row="0"
+                    Background="#1D9E75"
+                    CornerRadius="10"
+                    Padding="24,18"
+                    Margin="0,0,0,24">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-        <UniformGrid Grid.Row="1"
-                 Columns="2"
-                 Rows="2"
-                 Margin="10"
-                 HorizontalAlignment="Center"
-                 VerticalAlignment="Top">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Text="Bienvenido al Sistema"
+                                   Foreground="#A8E6D0"
+                                   FontSize="13"/>
+                        <TextBlock Text="Ferredomos de Durango"
+                                   Foreground="White"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Margin="0,4,0,0"/>
+                        <TextBlock Foreground="#D0F0E6"
+                                   FontSize="12"
+                                   Margin="0,6,0,0">
+                            <TextBlock.Text>
+                                <Binding Path="TodayDate"/>
+                            </TextBlock.Text>
+                        </TextBlock>
+                    </StackPanel>
 
-            <!-- Ordenes Hoy -->
-            <Border Background="#3498db"
-                CornerRadius="10"
-                Margin="10"
-                Padding="20">
-
-                <StackPanel>
-                    <TextBlock Text="Órdenes Hoy"
-                           FontSize="16"
-                           Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.OrdersToday}"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-                </StackPanel>
-
+                    <!-- Logo -->
+                    <Border Grid.Column="1"
+                            Width="70" Height="70"
+                            Background="White"
+                            CornerRadius="35"
+                            Margin="0,0,4,0">
+                        <Image Source="/src/Assets/logo.png"
+                               Stretch="Uniform"
+                               Margin="6"/>
+                    </Border>
+                </Grid>
             </Border>
 
-            <!-- Pendientes -->
-            <Border Background="#f39c12"
-                CornerRadius="10"
-                Margin="10"
-                Padding="20">
+            <!-- Tarjetas de estadísticas -->
+            <UniformGrid Grid.Row="1"
+                         Columns="4"
+                         Margin="0,0,0,24">
 
-                <StackPanel>
-                    <TextBlock Text="Órdenes Pendientes"
-                           FontSize="16"
-                           Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.PendingOrders}"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-                </StackPanel>
+                <!-- Órdenes hoy -->
+                <Border Background="#2980B9"
+                        CornerRadius="10"
+                        Margin="0,0,10,0"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="📋"
+                                   FontSize="22"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding Stats.OrdersToday}"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <TextBlock Text="Órdenes hoy"
+                                   FontSize="12"
+                                   Foreground="#AED6F1"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
 
+                <!-- Órdenes pendientes -->
+                <Border Background="#D68910"
+                        CornerRadius="10"
+                        Margin="0,0,10,0"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="⏳"
+                                   FontSize="22"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding Stats.PendingOrders}"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <TextBlock Text="Pendientes"
+                                   FontSize="12"
+                                   Foreground="#FAD7A0"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Materiales bajos -->
+                <Border CornerRadius="10"
+                        Margin="0,0,10,0"
+                        Padding="18,16">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="Background" Value="#1D9E75"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasLowStock}" Value="True">
+                                    <Setter Property="Background" Value="#C0392B"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <StackPanel>
+                        <TextBlock Text="⚠"
+                                   FontSize="22"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding Stats.LowMaterials}"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <TextBlock Text="Stock bajo"
+                                   FontSize="12"
+                                   Foreground="#FADBD8"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Ventas hoy -->
+                <Border Background="#1D9E75"
+                        CornerRadius="10"
+                        Padding="18,16">
+                    <StackPanel>
+                        <TextBlock Text="💰"
+                                   FontSize="22"
+                                   Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding Stats.TodaySales, StringFormat=C}"
+                                   FontSize="26"
+                                   FontWeight="Bold"
+                                   Foreground="White"/>
+                        <TextBlock Text="Ventas hoy"
+                                   FontSize="12"
+                                   Foreground="#A8E6D0"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+            </UniformGrid>
+
+            <!-- Alerta materiales bajos -->
+            <Border Grid.Row="2"
+                    Background="#FEF9E7"
+                    BorderBrush="#F9E79F"
+                    BorderThickness="1"
+                    CornerRadius="8"
+                    Padding="16,12"
+                    Margin="0,0,0,20"
+                    Visibility="{Binding HasLowStock, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <TextBlock Foreground="#B7770D" FontSize="13">
+                    <Run FontWeight="Bold" Text="⚠ Atención: "/>
+                    <Run Text="{Binding Stats.LowMaterials, StringFormat='Hay {0} material(es) con stock bajo. Revisa el inventario.'}"/>
+                </TextBlock>
             </Border>
 
-            <!-- Materiales bajos -->
-            <Border Background="#e74c3c"
-                CornerRadius="10"
-                Margin="10"
-                Padding="20">
-
-                <StackPanel>
-                    <TextBlock Text="Materiales Bajos"
+            <!-- Tabla materiales con stock bajo -->
+            <StackPanel Grid.Row="3">
+                <TextBlock Text="Materiales con stock bajo"
                            FontSize="16"
-                           Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.LowMaterials}"
-                           FontSize="30"
                            FontWeight="Bold"
-                           Foreground="White"/>
-                </StackPanel>
+                           Foreground="#2C3E50"
+                           Margin="0,0,0,10"/>
 
-            </Border>
+                <DataGrid ItemsSource="{Binding LowStockMaterials}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          IsReadOnly="True"
+                          MaxHeight="220"
+                          BorderBrush="#E0E0E0"
+                          BorderThickness="1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Material"
+                                            Binding="{Binding Name}"
+                                            Width="*"/>
+                        <DataGridTextColumn Header="Código"
+                                            Binding="{Binding Code}"
+                                            Width="100"/>
+                        <DataGridTextColumn Header="Stock"
+                                            Binding="{Binding Stock}"
+                                            Width="80"/>
+                        <DataGridTextColumn Header="Estante"
+                                            Binding="{Binding Shelf}"
+                                            Width="100"/>
+                    </DataGrid.Columns>
 
-            <!-- Ventas -->
-            <Border Background="#2ecc71"
-                CornerRadius="10"
-                Margin="10"
-                Padding="20">
+                    <!-- Resaltar filas con stock muy bajo -->
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Stock}" Value="0">
+                                    <Setter Property="Background" Value="#FADBD8"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
 
-                <StackPanel>
-                    <TextBlock Text="Ventas Hoy"
-                           FontSize="16"
-                           Foreground="White"/>
-                    <TextBlock Text="{Binding Stats.TodaySales,StringFormat=C}"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           Foreground="White"/>
-                </StackPanel>
+                <!-- Mensaje cuando no hay materiales bajos -->
+                <Border Background="#EAFAF1"
+                        BorderBrush="#A9DFBF"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Padding="16,12"
+                        Margin="0,8,0,0"
+                        Visibility="{Binding HasLowStock, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                    <TextBlock Text="✅ Todos los materiales tienen stock suficiente"
+                               Foreground="#1E8449"
+                               FontSize="13"/>
+                </Border>
 
-            </Border>
+            </StackPanel>
 
-        </UniformGrid>
-
-        <!-- LISTA DE MATERIALES BAJOS -->
-
-        <StackPanel Grid.Row="2" Margin="10">
-
-            <TextBlock Text="⚠ Materiales con stock bajo"
-           FontSize="18"
-           FontWeight="Bold"
-           Margin="0,20,0,10"/>
-
-            <DataGrid ItemsSource="{Binding LowStockMaterials}"
-          AutoGenerateColumns="False"
-          Height="200"
-          CanUserAddRows="False">
-
-                <DataGrid.Columns>
-
-                    <DataGridTextColumn Header="Material"
-                    Binding="{Binding Name}"
-                    Width="*"/>
-
-                    <DataGridTextColumn Header="Stock"
-                    Binding="{Binding Stock}"
-                    Width="120"/>
-
-                </DataGrid.Columns>
-
-            </DataGrid>
-
-        </StackPanel>
-
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </UserControl>

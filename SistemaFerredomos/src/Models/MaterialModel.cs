@@ -14,8 +14,11 @@ namespace SistemaFerredomos.src.Models
         public decimal PurchasePrice{ get; set; }
         public decimal SalePrice { get; set; }
         public int SupplierId { get; set; }
-
-        public SupplierModel Supplier { get; set; }
         public string Image { get; set; }
+        public string Code { get; set; }
+        public double Size { get; set; }
+        public string Shelf { get; set; }
+        public string ColorCode { get; set; }
+        public SupplierModel Supplier { get; set; }
     }
 }

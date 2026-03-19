@@ -42,6 +42,7 @@
 
         <convert:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <convert:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <convert:NullToBoolConverter x:Key="NullToBoolConverter"/>
         
     </Application.Resources>
 </Application>

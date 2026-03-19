@@ -35,11 +35,11 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             Suppliers = new ObservableCollection<SupplierModel>(_repository.GetSuppliers());
 
-            SaveCommand = new RelayCommand(
-                o => SaveMaterial(),
-                o => CanSave()
-            );
+            // ★ Cargar colores desde la BD
+            var colorRepo = new ColorRepository();
+            Colors = new ObservableCollection<ColorModel>(colorRepo.GetAll());
 
+            SaveCommand = new RelayCommand(o => SaveMaterial(), o => CanSave());
             CancelCommand = new RelayCommand(o => _onCancel?.Invoke());
             SelectImageCommand = new RelayCommand(o => SelectImage());
             RemoveImageCommand = new RelayCommand(o => RemoveImage());
@@ -52,96 +52,63 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 Stock = material.Stock;
                 PurchasePrice = material.PurchasePrice;
                 SalePrice = material.SalePrice;
+                Code = material.Code;
+                Size = material.Size;
+                Shelf = material.Shelf;
                 SelectedSupplier = Suppliers.FirstOrDefault(s => s.Id == material.SupplierId);
+                SelectedColor = Colors.FirstOrDefault(c => c.Code == material.ColorCode);
                 _imageFileName = material.Image;
 
-                // Cargar imagen si existe
                 if (!string.IsNullOrEmpty(material.Image))
-                {
                     MaterialImage = _imageService.LoadImage(material.Image);
-                }
                 else
-                {
                     MaterialImage = _imageService.GetDefaultImage();
-                }
             }
-            // Imagen por defecto si no hay imagen
+
             if (MaterialImage == null)
-            {
                 MaterialImage = _imageService.GetDefaultImage();
-            }
         }
 
         public string Title => MaterialId == 0 ? "AGREGAR NUEVO MATERIAL" : "EDITAR MATERIAL";
         public int MaterialId { get; set; }
-        public ObservableCollection<SupplierModel> Suppliers { get; set; }
 
-        // Propiedades para el binding
+        public ObservableCollection<SupplierModel> Suppliers { get; set; }
+        public ObservableCollection<ColorModel> Colors { get; set; }
+
+        // ── Propiedades existentes ──
         private string _name;
         public string Name
         {
             get => _name;
-            set
-            {
-                if (SetProperty(ref _name, value))
-                {
-                    // Forzar reevaluación de CanExecute
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
+            set { if (SetProperty(ref _name, value)) CommandManager.InvalidateRequerySuggested(); }
         }
 
         private decimal _stock;
         public decimal Stock
         {
             get => _stock;
-            set
-            {
-                if (SetProperty(ref _stock, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
+            set { if (SetProperty(ref _stock, value)) CommandManager.InvalidateRequerySuggested(); }
         }
 
         private decimal _purchasePrice;
         public decimal PurchasePrice
         {
             get => _purchasePrice;
-            set
-            {
-                if (SetProperty(ref _purchasePrice, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
+            set { if (SetProperty(ref _purchasePrice, value)) CommandManager.InvalidateRequerySuggested(); }
         }
 
         private decimal _salePrice;
         public decimal SalePrice
         {
             get => _salePrice;
-            set
-            {
-                if (SetProperty(ref _salePrice, value))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
+            set { if (SetProperty(ref _salePrice, value)) CommandManager.InvalidateRequerySuggested(); }
         }
 
         private SupplierModel _selectedSupplier;
         public SupplierModel SelectedSupplier
         {
             get => _selectedSupplier;
-            set
-            {
-                if (SetProperty(ref _selectedSupplier, value))
-                {
-                    System.Diagnostics.Debug.WriteLine($"Proveedor seleccionado: {value?.Name}");
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            }
+            set { if (SetProperty(ref _selectedSupplier, value)) CommandManager.InvalidateRequerySuggested(); }
         }
 
         public BitmapImage MaterialImage
@@ -150,6 +117,36 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set => SetProperty(ref _materialImage, value);
         }
 
+        // ── Propiedades nuevas ★ ──
+        private string _code;
+        public string Code
+        {
+            get => _code;
+            set => SetProperty(ref _code, value);
+        }
+
+        private double _size;
+        public double Size
+        {
+            get => _size;
+            set => SetProperty(ref _size, value);
+        }
+
+        private string _shelf;
+        public string Shelf
+        {
+            get => _shelf;
+            set => SetProperty(ref _shelf, value);
+        }
+
+        private ColorModel _selectedColor;
+        public ColorModel SelectedColor
+        {
+            get => _selectedColor;
+            set => SetProperty(ref _selectedColor, value);
+        }
+
+        // ── Commands ──
         public ICommand SaveCommand { get; set; }
         public ICommand CancelCommand { get; set; }
         public ICommand SelectImageCommand { get; set; }
@@ -162,11 +159,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 var newImageFileName = _imageService.SelectAndSaveImage();
                 if (!string.IsNullOrEmpty(newImageFileName))
                 {
-                    // Eliminar imagen anterior si existe
                     if (!string.IsNullOrEmpty(_imageFileName))
-                    {
                         _imageService.DeleteImage(_imageFileName);
-                    }
 
                     _imageFileName = newImageFileName;
                     ImageFileName = _imageFileName;
@@ -175,8 +169,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error al seleccionar imagen: {ex.Message}", "Error",
-                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                System.Windows.MessageBox.Show($"Error al seleccionar imagen: {ex.Message}");
             }
         }
 
@@ -211,13 +204,18 @@ namespace SistemaFerredomos.src.ViewModels.Main
                     Stock = Stock,
                     PurchasePrice = PurchasePrice,
                     SalePrice = SalePrice,
-                    SupplierId = SelectedSupplier?.Id ?? 0, 
-                    Image = _imageFileName
+                    SupplierId = SelectedSupplier?.Id ?? 0,
+                    Image = _imageFileName,
+                    // ★ Campos nuevos
+                    Code = Code?.Trim(),
+                    Size = Size,
+                    Shelf = Shelf?.Trim(),
+                    ColorCode = SelectedColor?.Code
                 };
 
-                bool success = MaterialId == 0 ?
-                    _repository.Add(material) :
-                    _repository.Update(material);
+                bool success = MaterialId == 0
+                    ? _repository.Add(material)
+                    : _repository.Update(material);
 
                 if (success)
                 {

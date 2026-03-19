@@ -6,17 +6,38 @@
         xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
         xmlns:vm="clr-namespace:SistemaFerredomos.src.ViewModels.Main"
         mc:Ignorable="d"
-        Title="MainView" Height="450" Width="800">
+        Title="Sistema Ferredomos" Height="600" Width="1000">
+
     <Window.Resources>
+
+        <!-- Home -->
         <DataTemplate DataType="{x:Type vm:HomeViewModel}">
             <local:HomeView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:MaterialsViewModel}">
-            <local:MaterialsView/>
+
+        <!-- Órdenes -->
+        <DataTemplate DataType="{x:Type vm:NewOrdersViewModel}">
+            <local:NewOrdersView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
-            <local:ProductsView/>
+        <DataTemplate DataType="{x:Type vm:OrdersReviewViewModel}">
+            <local:OrdersReviewView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:OrderDetailsViewModel}">
+            <local:OrderDetailsView/>
+        </DataTemplate>
+
+        <!-- Pedidos a proveedor -->
+        <DataTemplate DataType="{x:Type vm:NewSupplierOrderViewModel}">
+            <local:NewSupplierOrderView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:NewPOrdersViewModel}">
+            <local:NewPOrdersView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:POrdersReviewViewModel}">
+            <local:POrdersReviewView/>
+        </DataTemplate>
+
+        <!-- Inventario -->
         <DataTemplate DataType="{x:Type vm:MaterialInventoryViewModel}">
             <local:MaterialInventoryView/>
         </DataTemplate>
@@ -24,15 +45,38 @@
             <local:ProductsInventoryView/>
         </DataTemplate>
 
+        <!-- Catálogos / Agregar -->
+        <DataTemplate DataType="{x:Type vm:MaterialsViewModel}">
+            <local:MaterialsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProductsViewModel}">
+            <local:ProductsView/>
+        </DataTemplate>
         <DataTemplate DataType="{x:Type vm:AddEditMaterialViewModel}">
             <local:AddEditMaterialView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:AddEditProductViewModel}">
             <local:AddEditProductView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SupplierViewModel}">
+            <local:SupplierView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DesingViewModel}">
+            <local:DesingView/>
+        </DataTemplate>
 
-        <DataTemplate DataType="{x:Type vm:GlassViewModel}">
-            <local:GlassView/>
+        <!-- Producción -->
+        <DataTemplate DataType="{x:Type vm:ProductionViewModel}">
+            <local:ProductionView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AddEditProductionViewModel}">
+            <local:AddEditProductionView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SelectProductViewModel}">
+            <local:SelectProductView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SelectProductionViewModel}">
+            <local:SelectProductionView/>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:DomesViewModel}">
             <local:DomesView/>
@@ -43,6 +87,19 @@
         <DataTemplate DataType="{x:Type vm:DoorViewModel}">
             <local:DoorView/>
         </DataTemplate>
+
+        <!-- otros -->
+        <DataTemplate DataType="{x:Type vm:GlassViewModel}">
+            <local:GlassView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:ProfileViewModel}">
+            <local:ProfileView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BreakdownViewModel}">
+            <local:BreakdownView/>
+        </DataTemplate>
+
+        <!-- Admin -->
         <DataTemplate DataType="{x:Type vm:ActivityViewModel}">
             <local:ActivityView/>
         </DataTemplate>
@@ -50,31 +107,16 @@
             <local:UsersView/>
         </DataTemplate>
 
-        <DataTemplate DataType="{x:Type vm:NewOrdersViewModel}">
-            <local:NewOrdersView/>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:OrdersReviewViewModel}">
-            <local:OrdersReviewView/>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:NewSupplierOrderViewModel}">
-            <local:NewSupplierOrderView/>
-        </DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:ProductionViewModel}">
-            <local:ProductionView/>
-        </DataTemplate>
-
-        <!-- Plantilla para el menú con submenús -->
+        <!-- Plantilla menú con submenús -->
         <HierarchicalDataTemplate DataType="{x:Type vm:NavItem}" ItemsSource="{Binding Children}">
-            <Button Content="{Binding Title}" 
+            <Button Content="{Binding Title}"
                     Command="{Binding DataContext.NavigateCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     CommandParameter="{Binding ViewType}"
                     Style="{StaticResource MenuButtonStyle}"
                     HorizontalContentAlignment="Left"
                     Padding="10,5"/>
         </HierarchicalDataTemplate>
+
     </Window.Resources>
 
     <Grid>
@@ -85,27 +127,50 @@
 
         <!-- Menú lateral -->
         <Border Grid.Column="0" Background="#2c3e50">
-            <StackPanel>
-                <TextBlock Text="Menú Principal" 
-                           Foreground="White" 
-                           FontSize="16"
-                           Margin="10,20,10,10"
-                           FontWeight="Bold"/>
+            <DockPanel>
+
+                <!-- Header con logo y usuario -->
+                <StackPanel DockPanel.Dock="Top" Margin="10,20,10,10">
+                    <TextBlock Text="Ferredomos"
+                               Foreground="White"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Durango"
+                               Foreground="#95a5a6"
+                               FontSize="11"
+                               HorizontalAlignment="Center"
+                               Margin="0,2,0,0"/>
+                    <!-- Separador -->
+                    <Separator Background="#34495e" Margin="0,12,0,8"/>
+                    <!-- Nombre y rol del usuario -->
+                    <TextBlock Text="{Binding UserDisplayName}"
+                               Foreground="#1abc9c"
+                               FontSize="12"
+                               TextWrapping="Wrap"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Margin="0,0,0,8"/>
+                    <Separator Background="#34495e" Margin="0,0,0,8"/>
+                </StackPanel>
+
+                <!-- Botón cerrar sesión al fondo -->
+                <Button DockPanel.Dock="Bottom"
+                        Content="Cerrar Sesión"
+                        Command="{Binding LogoutCommand}"
+                        Style="{StaticResource LogoutButtonStyle}"
+                        Margin="10,10,10,20"/>
+
                 <!-- Menú con submenús -->
-                <TreeView ItemsSource="{Binding MenuItems}" 
+                <TreeView ItemsSource="{Binding MenuItems}"
                           Background="Transparent"
                           BorderThickness="0"
                           Foreground="White"/>
-
-                <Button Content="Cerrar Sesión" 
-                        Command="{Binding LogoutCommand}"
-                        Style="{StaticResource LogoutButtonStyle}"
-                        Margin="10,50,10,10"/>
-            </StackPanel>
+            </DockPanel>
         </Border>
 
         <!-- Área de contenido -->
-        <ContentControl Grid.Column="1" 
+        <ContentControl Grid.Column="1"
                         Content="{Binding CurrentView}"
                         Margin="10"/>
     </Grid>

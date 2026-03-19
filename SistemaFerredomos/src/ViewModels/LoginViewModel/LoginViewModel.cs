@@ -1,13 +1,10 @@
 ﻿using SistemaFerredomos.src.Models;
+using SistemaFerredomos.src.Services;
 using SistemaFerredomos.src.Repositories.LoginAuth;
 using SistemaFerredomos.src.ViewModels.Commons;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace SistemaFerredomos.src.ViewModels.LoginViewModel
@@ -18,27 +15,51 @@ namespace SistemaFerredomos.src.ViewModels.LoginViewModel
         private string _username = "";
         private string _password = "";
         private string _errorMessage = "";
+        private string _usernameError;
+        private string _passwordError;
 
         public string Username
         {
             get => _username;
-            set { _username = value; OnPropertyChanged(); }
+            set { _username = value; OnPropertyChanged(); ValidateUsername(); }
         }
 
         public string Password
         {
             get => _password;
-            set { _password = value; OnPropertyChanged(); }
+            set { _password = value; OnPropertyChanged(); ValidatePassword(); }
         }
 
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
-        public ICommand LoginCommand { get; }
+        // Controla visibilidad del mensaje de error
+        public bool HasError => !string.IsNullOrWhiteSpace(_errorMessage);
 
+        public string UsernameError
+        {
+            get => _usernameError;
+            set { _usernameError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasUsernameError)); }
+        }
+
+        public string PasswordError
+        {
+            get => _passwordError;
+            set { _passwordError = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasPasswordError)); }
+        }
+
+        public bool HasUsernameError => !string.IsNullOrWhiteSpace(_usernameError);
+        public bool HasPasswordError => !string.IsNullOrWhiteSpace(_passwordError);
+
+        public ICommand LoginCommand { get; }
         public event Action<UserModel> LoginSuccessful;
 
         public LoginViewModel(IUserRepository userRepository)
@@ -47,29 +68,43 @@ namespace SistemaFerredomos.src.ViewModels.LoginViewModel
             LoginCommand = new RelayCommand(ExecuteLogin, CanExecuteLogin);
         }
 
+        private void ValidateUsername()
+        {
+            UsernameError = ValidationHelper.GetUsernameError(Username);
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void ValidatePassword()
+        {
+            PasswordError = ValidationHelper.GetPasswordError(Password);
+            CommandManager.InvalidateRequerySuggested();
+        }
+
         private bool CanExecuteLogin(object parameter)
-            => !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password);
+            => !string.IsNullOrWhiteSpace(Username) && !string.IsNullOrWhiteSpace(Password) && !HasUsernameError && !HasPasswordError;
 
         private void ExecuteLogin(object parameter)
         {
+            ValidateUsername();
+            ValidatePassword();
+            if (HasUsernameError || HasPasswordError) return;
             try
             {
-                var user = _userRepository.Authenticate(Username, Password);
+                ErrorMessage = "";
+                var user = _userRepository.Authenticate(Username.Trim(), Password);
 
                 if (user != null)
                 {
-                    ErrorMessage = "";
                     LoginSuccessful?.Invoke(user);
                 }
                 else
                 {
-                    ErrorMessage = "Credenciales inválidas";
+                    ErrorMessage = "Usuario o contraseña incorrectos";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Error: {ex.Message}";
-                // Para depuración: ErrorMessage = ex.ToString();
+                ErrorMessage = $"Error de conexión: {ex.Message}";
             }
         }
 

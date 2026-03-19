@@ -1,12 +1,70 @@
 ﻿<UserControl x:Class="SistemaFerredomos.src.Views.Main.ActivityView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SistemaFerredomos.src.Views.Main"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="500" d:DesignWidth="900">
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Botones -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="🔄 Actualizar"
+                    Command="{Binding RefreshCommand}"
+                    Width="120"/>
+        </StackPanel>
+
+        <!-- Filtro -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Buscar usuario:"
+                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Width="220" VerticalContentAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Tabla -->
+        <DataGrid Grid.Row="2"
+                  ItemsSource="{Binding Activities}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  IsReadOnly="True">
+
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Activity}" Value="login">
+                            <Setter Property="Background" Value="#EAFAF1"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Activity}" Value="logout">
+                            <Setter Property="Background" Value="#FDFEFE"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Activity}" Value="orden">
+                            <Setter Property="Background" Value="#EAF4FB"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Fecha"
+                                    Binding="{Binding DateTime, StringFormat=dd/MM/yyyy HH:mm}"
+                                    Width="140"/>
+                <DataGridTextColumn Header="Usuario"
+                                    Binding="{Binding UserName}"
+                                    Width="160"/>
+                <DataGridTextColumn Header="Actividad"
+                                    Binding="{Binding ActivityLabel}"
+                                    Width="*"/>
+                <DataGridTextColumn Header="Referencia"
+                                    Binding="{Binding ReferenceId}"
+                                    Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>
