@@ -61,8 +61,8 @@
         <DataTemplate DataType="{x:Type vm:SupplierViewModel}">
             <local:SupplierView/>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:DesingViewModel}">
-            <local:DesingView/>
+        <DataTemplate DataType="{x:Type vm:DesignViewModel}">
+            <local:DesignView/>
         </DataTemplate>
 
         <!-- Producción -->

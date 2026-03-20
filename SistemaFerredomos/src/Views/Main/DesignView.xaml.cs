@@ -18,9 +18,9 @@ namespace SistemaFerredomos.src.Views.Main
     /// <summary>
     /// Lógica de interacción para DesingView.xaml
     /// </summary>
-    public partial class DesingView : UserControl
+    public partial class DesignView : UserControl
     {
-        public DesingView()
+        public DesignView()
         {
             InitializeComponent();
         }

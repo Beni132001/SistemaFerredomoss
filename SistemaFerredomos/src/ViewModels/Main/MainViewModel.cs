@@ -177,7 +177,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
                     // Otros (admin)
                     NavViewType.Suppliers => new SupplierViewModel(),
-                    NavViewType.Desing => new DesingViewModel(),
+                    NavViewType.Desing => new DesignViewModel(),
                     NavViewType.Activity => new ActivityViewModel(),
                     NavViewType.Users => new UsersViewModel(),
 

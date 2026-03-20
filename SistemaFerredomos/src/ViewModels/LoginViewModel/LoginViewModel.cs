@@ -14,7 +14,7 @@ namespace SistemaFerredomos.src.ViewModels.LoginViewModel
         private readonly IUserRepository _userRepository;
         private string _username = "";
         private string _password = "";
-        private string _errorMessage = "";
+        private string _errorMessage = null;
         private string _usernameError;
         private string _passwordError;
 
@@ -76,7 +76,7 @@ namespace SistemaFerredomos.src.ViewModels.LoginViewModel
 
         private void ValidatePassword()
         {
-            PasswordError = ValidationHelper.GetPasswordError(Password);
+            PasswordError = Password.Length < 4 ? "Mínimo 4 caracteres" : "";
             CommandManager.InvalidateRequerySuggested();
         }
 
@@ -95,6 +95,7 @@ namespace SistemaFerredomos.src.ViewModels.LoginViewModel
 
                 if (user != null)
                 {
+                    ErrorMessage = null;
                     LoginSuccessful?.Invoke(user);
                 }
                 else

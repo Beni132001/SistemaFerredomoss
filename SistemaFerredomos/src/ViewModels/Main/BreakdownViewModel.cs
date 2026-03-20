@@ -27,7 +27,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set => SetProperty(ref _selectedBreakdown, value);
         }
 
-        // ── Filtro de búsqueda por número de orden ──
+        // Filtro de búsqueda por número de orden
         private string _searchOrder;
         public string SearchOrder
         {
@@ -39,7 +39,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
         }
 
-        // ── Campos del formulario ──
+        // Campos del formulario
         private string _orderNumber;
         public string OrderNumber
         {
@@ -83,6 +83,13 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set => SetProperty(ref _isFormVisible, value);
         }
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => SetProperty(ref _isLoading, value);
+        }
+
         // Commands
         public ICommand AddCommand { get; }
         public ICommand DeleteCommand { get; }
@@ -119,9 +126,16 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void LoadProfiles()
         {
-            ProfileList.Clear();
-            foreach (var p in _profileRepository.GetAll())
-                ProfileList.Add(p);
+            try
+            {
+                ProfileList.Clear();
+                foreach (var p in _profileRepository.GetAll())
+                    ProfileList.Add(p);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar perfiles: {ex.Message}");
+            }
         }
 
         private void OpenForm()
@@ -149,7 +163,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
         {
             return !string.IsNullOrWhiteSpace(OrderNumber) &&
                    SelectedProfile != null &&
-                   Quantity > 0;
+                   Quantity > 0 && 
+                   (Size > 0 || SelectedProfile?.Size > 0);
         }
 
         private void SaveBreakdown()
@@ -172,7 +187,10 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
             else
             {
-                MessageBox.Show("❌ Error al guardar desglose");
+                MessageBox.Show("No se pudo guardar el desglose. Verifica los datos.",
+                "Error",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
             }
         }
 

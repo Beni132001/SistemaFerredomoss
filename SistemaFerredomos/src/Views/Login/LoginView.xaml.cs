@@ -59,5 +59,6 @@ namespace SistemaFerredomos.src.Views.Login
                 ((LoginViewModel)DataContext).Password = ((PasswordBox)sender).Password;
             }
         }
+
     }
 }

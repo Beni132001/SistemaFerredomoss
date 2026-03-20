@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 
 namespace SistemaFerredomos.src.ViewModels.Main
 {
-    public class DesingViewModel : BaseViewModel
+    public class DesignViewModel : BaseViewModel
     {
         private readonly DesignsRepository _repository;
         private readonly ImageService _imageService;
@@ -85,7 +85,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
         public ICommand SelectImageCommand { get; }
         public ICommand RemoveImageCommand { get; }
 
-        public DesingViewModel(DesignsRepository repository = null)
+        public DesignViewModel(DesignsRepository repository = null)
         {
             _repository = repository ?? new DesignsRepository();
             _imageService = new ImageService();
