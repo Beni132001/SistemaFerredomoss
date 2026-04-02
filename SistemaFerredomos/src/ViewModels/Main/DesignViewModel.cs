@@ -76,6 +76,34 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private bool _isEditing;
         public string FormTitle => _isEditing ? "EDITAR DISEÑO" : "AGREGAR DISEÑO";
 
+        private List<DesignsModel> _allDesigns = new();
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                    ApplyFilter();
+            }
+        }
+
+        
+        private void ApplyFilter()
+        {
+            Designs.Clear();
+
+            var filtered = string.IsNullOrWhiteSpace(SearchText)
+                ? _allDesigns
+                : _allDesigns.Where(d =>
+                    (d.Name ?? "").ToLower().Contains(SearchText.ToLower()) ||
+                    (d.Color ?? "").ToLower().Contains(SearchText.ToLower()));
+
+            foreach (var d in filtered)
+                Designs.Add(d);
+        }
+
         // Commands
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
@@ -103,9 +131,8 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void LoadDesigns()
         {
-            Designs.Clear();
-            foreach (var d in _repository.GetAll())
-                Designs.Add(d);
+            _allDesigns = _repository.GetAll();
+            ApplyFilter();
         }
 
         private void LoadPreview(DesignsModel design)
@@ -197,7 +224,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 Id = _isEditing ? SelectedDesign.Id : 0,
                 Name = Name.Trim(),
                 Description = Description?.Trim(),
-                Color = Color?.Trim(),
+                Color = Color?.Trim().ToLower(), //normalizar a minúsculas
                 Image = _imageFileName
             };
 
@@ -227,21 +254,31 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
-            if (result == MessageBoxResult.Yes)
-            {
-                if (_repository.Delete(SelectedDesign.Id))
-                {
-                    if (!string.IsNullOrEmpty(SelectedDesign.Image))
-                        _imageService.DeleteImage(SelectedDesign.Image);
+            if (result != MessageBoxResult.Yes) return;
 
-                    MessageBox.Show("✅ Diseño eliminado correctamente");
-                    PreviewImage = null;
-                    LoadDesigns();
-                }
-                else
-                {
-                    MessageBox.Show("❌ No se puede eliminar. El diseño está en uso en producción.");
-                }
+            // Verificar si está en uso antes de intentar borrar
+            if (_repository.IsInUse(SelectedDesign.Id))
+            {
+                MessageBox.Show(
+                    $"No se puede eliminar '{SelectedDesign.Name}' porque está asignado a una o más producciones.",
+                    "Diseño en uso",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_repository.Delete(SelectedDesign.Id))
+            {
+                if (!string.IsNullOrEmpty(SelectedDesign.Image))
+                    _imageService.DeleteImage(SelectedDesign.Image);
+
+                MessageBox.Show("✅ Diseño eliminado correctamente");
+                PreviewImage = null;
+                LoadDesigns();
+            }
+            else
+            {
+                MessageBox.Show("❌ Error al eliminar diseño");
             }
         }
     }

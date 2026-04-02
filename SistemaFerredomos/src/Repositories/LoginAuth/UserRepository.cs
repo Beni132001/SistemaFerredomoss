@@ -2,10 +2,6 @@
 using SistemaFerredomos.src.Models;
 using SistemaFerredomos.src.Repositories.Commons;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SistemaFerredomos.src.Repositories.LoginAuth
 {
@@ -25,34 +21,75 @@ namespace SistemaFerredomos.src.Repositories.LoginAuth
                 using (var conn = _databaseService.GetConnection())
                 {
                     conn.Open();
+
                     var cmd = new MySqlCommand(
-                        "SELECT id, name, username, type FROM users " +
-                        "WHERE username = @username AND password = @password",
+                        "SELECT id, name, username, password, type FROM users WHERE username = @username",
                         conn);
 
                     cmd.Parameters.AddWithValue("@username", username);
-                    cmd.Parameters.AddWithValue("@password", password);
 
                     using (var reader = cmd.ExecuteReader())
                     {
-                        if (reader.Read())
+                        if (!reader.Read())
+                            return null;
+
+                        var storedPassword = reader.GetString("password");
+
+                        bool isValid = false;
+
+                        // 🔥 CASO 1: ya es hash BCrypt
+                        if (storedPassword.StartsWith("$2"))
                         {
-                            return new UserModel
-                            {
-                                Id = reader.GetInt32("id"),
-                                Name = reader.GetString("name"),
-                                UserName = reader.GetString("username"),
-                                Type = Enum.Parse<UserType>(reader.GetString("type"), true)
-                            };
+                            isValid = BCrypt.Net.BCrypt.Verify(password, storedPassword);
                         }
-                        return null;
+                        else
+                        {
+                            // CASO 2: contraseña en texto plano (MIGRACIÓN)
+                            if (password == storedPassword)
+                            {
+                                isValid = true;
+
+                                // generar nuevo hash
+                                string newHash = BCrypt.Net.BCrypt.HashPassword(password);
+
+                                // actualizar en BD automáticamente
+                                UpdatePassword(reader.GetInt32("id"), newHash);
+                            }
+                        }
+
+                        if (!isValid)
+                            return null;
+
+                        return new UserModel
+                        {
+                            Id = reader.GetInt32("id"),
+                            Name = reader.GetString("name"),
+                            UserName = reader.GetString("username"),
+                            Type = Enum.Parse<UserType>(reader.GetString("type"), true)
+                        };
                     }
                 }
             }
             catch (Exception ex)
             {
-                // Manejo de errores (deberías implementar logging)
                 throw new Exception("Error de conexión a la base de datos", ex);
+            }
+        }
+
+        private void UpdatePassword(int userId, string newHash)
+        {
+            using (var conn = _databaseService.GetConnection())
+            {
+                conn.Open();
+
+                var cmd = new MySqlCommand(
+                    "UPDATE users SET password = @password WHERE id = @id",
+                    conn);
+
+                cmd.Parameters.AddWithValue("@password", newHash);
+                cmd.Parameters.AddWithValue("@id", userId);
+
+                cmd.ExecuteNonQuery();
             }
         }
     }

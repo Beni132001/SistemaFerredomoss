@@ -141,11 +141,11 @@ namespace SistemaFerredomos.src.ViewModels.Main
                     NavViewType.Home => new HomeViewModel(),
 
                     // Órdenes
-                    NavViewType.NewOrders => new NewOrdersViewModel(),
+                    NavViewType.NewOrders => new NewOrdersViewModel(_currentUser),
                     NavViewType.OrdersReview => new OrdersReviewViewModel(),
 
                     // Pedidos proveedor
-                    NavViewType.NewPOrders => new NewSupplierOrderViewModel(),
+                    NavViewType.NewPOrders => new NewSupplierOrderViewModel(_currentUser),
                     NavViewType.POrdersReview => new POrdersReviewViewModel(),
 
                     // Inventario

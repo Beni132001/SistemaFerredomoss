@@ -54,6 +54,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
         // Título dinámico del formulario
         private bool _isEditing;
         public string FormTitle => _isEditing ? "EDITAR PERFIL" : "AGREGAR PERFIL";
+        public bool IsCodeEditable => !_isEditing;
 
         // Commands
         public ICommand AddCommand { get; }
@@ -99,6 +100,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             IsFormVisible = true;
             OnPropertyChanged(nameof(FormTitle));
+            OnPropertyChanged(nameof(IsCodeEditable));
         }
 
         private void CloseForm()
@@ -129,6 +131,17 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 Name = Name.Trim(),
                 Size = Size
             };
+
+            // Solo verificar duplicado al agregar, no al editar
+            if (!_isEditing && _repository.ExistsCode(profile.Code))
+            {
+                MessageBox.Show(
+                    $"Ya existe un perfil con el código '{profile.Code}'.",
+                    "Código duplicado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
 
             bool success = _isEditing
                 ? _repository.Update(profile)

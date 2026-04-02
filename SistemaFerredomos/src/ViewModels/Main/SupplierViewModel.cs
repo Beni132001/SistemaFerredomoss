@@ -20,6 +20,27 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set => SetProperty(ref _selectedSupplier, value);
         }
 
+        private string _search;
+        public string Search
+        {
+            get => _search;
+            set
+            {
+                if (SetProperty(ref _search, value))
+                    FilterSuppliers();
+            }
+        }
+
+        private void FilterSuppliers()
+        {
+            var list = _repository.GetAll()
+                .Where(s => s.Name.ToLower().Contains(Search?.ToLower() ?? ""));
+
+            Suppliers.Clear();
+            foreach (var s in list)
+                Suppliers.Add(s);
+        }
+
         // Campos del formulario
         private string _name;
         public string Name
@@ -110,7 +131,11 @@ namespace SistemaFerredomos.src.ViewModels.Main
             Address = string.Empty;
         }
 
-        private bool CanSave() => !string.IsNullOrWhiteSpace(Name);
+        private bool CanSave()
+        {
+            return !string.IsNullOrWhiteSpace(Name)
+                && Name.Length >= 3;
+        }
 
         private void SaveSupplier()
         {
@@ -150,6 +175,11 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             if (result == MessageBoxResult.Yes)
             {
+                if (_repository.HasDependencies(SelectedSupplier.Id))
+                {
+                    MessageBox.Show("No puedes eliminar este proveedor porque tiene materiales asociados.");
+                    return;
+                }
                 if (_repository.Delete(SelectedSupplier.Id))
                 {
                     MessageBox.Show("✅ Proveedor eliminado correctamente");

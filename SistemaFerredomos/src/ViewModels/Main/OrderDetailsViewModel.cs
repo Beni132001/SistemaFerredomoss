@@ -10,6 +10,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private readonly OrdersRepository _ordersRepository;
 
         public ObservableCollection<OrderDetailsProductsModel> Products { get; set; }
+        public ObservableCollection<OrderDetailsProductionModel> Productions { get; set; }
 
         public int OrderId { get; }
 
@@ -21,6 +22,10 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             Products = new ObservableCollection<OrderDetailsProductsModel>(
                 _ordersRepository.GetOrderProducts(orderId)
+            );
+
+            Productions = new ObservableCollection<OrderDetailsProductionModel>(
+            _ordersRepository.GetOrderProductions(orderId)
             );
         }
     }

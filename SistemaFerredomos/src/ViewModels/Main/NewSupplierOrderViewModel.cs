@@ -14,6 +14,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private readonly SupplierOrdersRepository _repository;
         private readonly MaterialRepository _materialRepository;
         private readonly ProductsRepository _productsRepository;
+        private readonly UserModel _currentUser;
 
         // Catálogos
         public ObservableCollection<MaterialModel> MaterialsCatalog { get; set; }
@@ -36,7 +37,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         public decimal TotalPrice => OrderMaterials.Sum(x => x.Subtotal) + OrderProducts.Sum(x => x.Subtotal);
 
-        public NewSupplierOrderViewModel()
+        public NewSupplierOrderViewModel(UserModel currentUser)
         {
             _repository = new SupplierOrdersRepository();
             _materialRepository = new MaterialRepository();
@@ -54,6 +55,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             AddMaterialCommand = new RelayCommand(AddMaterial);
             AddProductCommand = new RelayCommand(AddProduct);
             SaveOrderCommand = new RelayCommand(SaveOrder);
+            _currentUser = currentUser;
         }
 
         private void AddMaterial(object obj)
@@ -104,7 +106,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             SupplierOrderModel order = new SupplierOrderModel
             {
-                UserId = 1,
+                UserId = _currentUser.Id,
                 SupplierId = SelectedSupplier.Id,
                 TotalPrice = TotalPrice
             };

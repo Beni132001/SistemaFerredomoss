@@ -168,5 +168,28 @@ namespace SistemaFerredomos.src.Repositories.Main
                 return false;
             }
         }
+
+        //para verificar codigo duplicado
+        public bool ExistsCode(string code)
+        {
+            try
+            {
+                using (var conn = _databaseService.GetConnection())
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM glass WHERE code = @code";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@code", code);
+                        return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Error al verificar código: " + ex.Message);
+                return false;
+            }
+        }
     }
 }

@@ -32,6 +32,20 @@
                 </DataGrid.Columns>
 
             </DataGrid>
+            <!-- Producciones -->
+            <TextBlock Text="Producción" FontWeight="Bold" Margin="0,0,0,6"/>
+            <DataGrid ItemsSource="{Binding Productions}"
+              AutoGenerateColumns="False"
+              CanUserAddRows="False" IsReadOnly="True"
+              MaxHeight="180">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Tipo"      Binding="{Binding Production.Type}" Width="90"/>
+                    <DataGridTextColumn Header="Nombre"    Binding="{Binding Production.Name}" Width="*"/>
+                    <DataGridTextColumn Header="Cant."     Binding="{Binding Quantity}"        Width="60"/>
+                    <DataGridTextColumn Header="Precio"    Binding="{Binding UnitPrice, StringFormat=C}" Width="90"/>
+                    <DataGridTextColumn Header="Subtotal"  Binding="{Binding Subtotal, StringFormat=C}"  Width="100"/>
+                </DataGrid.Columns>
+            </DataGrid>
 
         </StackPanel>
 

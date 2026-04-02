@@ -115,6 +115,29 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
         }
 
+        //para verficar antes de borrar
+        public bool IsInUse(int id)
+        {
+            try
+            {
+                using (var conn = _databaseService.GetConnection())
+                {
+                    conn.Open();
+                    string query = "SELECT COUNT(*) FROM production WHERE design_id = @id";
+                    using (var cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@id", id);
+                        return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ Error al verificar uso del diseño: " + ex.Message);
+                return true; // si hay error, asumir que está en uso para evitar borrado accidental
+            }
+        }
+
         private DesignsModel MapReader(MySqlDataReader reader)
         {
             return new DesignsModel

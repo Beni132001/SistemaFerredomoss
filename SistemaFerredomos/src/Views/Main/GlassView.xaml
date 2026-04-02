@@ -22,6 +22,10 @@
 
             <!-- Botones de acción -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                <TextBox Width="200" Height="28"
+                         Margin="0,0,10,0"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         ToolTip="Buscar por código o nombre..."/>
                 <Button Content="➕ Agregar Vidrio"
                         Command="{Binding AddCommand}"
                         Width="130"/>
@@ -45,9 +49,9 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Código"  Binding="{Binding Code}"      Width="100"/>
                     <DataGridTextColumn Header="Nombre"  Binding="{Binding Name}"      Width="*"/>
-                    <DataGridTextColumn Header="Ancho"   Binding="{Binding Width}"     Width="80"/>
-                    <DataGridTextColumn Header="Alto"    Binding="{Binding Height}"    Width="80"/>
-                    <DataGridTextColumn Header="Grosor"  Binding="{Binding Thickness}" Width="80"/>
+                    <DataGridTextColumn Header="Ancho (m)"   Binding="{Binding Width}"     Width="80"/>
+                    <DataGridTextColumn Header="Alto (m)"    Binding="{Binding Height}"    Width="80"/>
+                    <DataGridTextColumn Header="Grosor (mm)"  Binding="{Binding Thickness}" Width="80"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
@@ -72,6 +76,7 @@
                 <!-- Código -->
                 <TextBlock Text="Código:"/>
                 <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding IsCodeEditable}"
                          Margin="0,4,0,10"/>
 
                 <!-- Nombre -->
@@ -82,17 +87,20 @@
                 <!-- Ancho -->
                 <TextBlock Text="Ancho (m):"/>
                 <TextBox Text="{Binding Width, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0,4,0,10"/>
+                         Margin="0,4,0,10"
+                         ToolTip="Debe ser mayor a 0"/>
 
                 <!-- Alto -->
                 <TextBlock Text="Alto (m):"/>
                 <TextBox Text="{Binding Height, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0,4,0,10"/>
+                         Margin="0,4,0,10"
+                         ToolTip="Debe ser mayor a 0"/>
 
                 <!-- Grosor -->
                 <TextBlock Text="Grosor (mm):"/>
                 <TextBox Text="{Binding Thickness, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="0,4,0,20"/>
+                         Margin="0,4,0,20"
+                         ToolTip="Debe ser mayor a 0"/>
 
                 <!-- Botones -->
                 <Button Content="💾 Guardar"

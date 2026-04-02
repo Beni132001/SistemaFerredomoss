@@ -1,4 +1,5 @@
-﻿using SistemaFerredomos.src.Models;
+﻿using System.Collections.Generic;
+using SistemaFerredomos.src.Models;
 using SistemaFerredomos.src.Repositories.Main;
 using SistemaFerredomos.src.Services;
 using SistemaFerredomos.src.ViewModels.Commons;
@@ -19,6 +20,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private readonly ProductionRepository _productionRepository;
         private readonly ProfileRepository _profileRepository;
         private readonly OrderProcessingService _orderService;
+        private readonly UserModel _currentUser;
 
         // Colecciones de la orden 
         public ObservableCollection<OrderDetailsProductsModel> OrderProducts { get; set; } = new();
@@ -81,8 +83,10 @@ namespace SistemaFerredomos.src.ViewModels.Main
         public ICommand AddProfileCommand { get; }   
         public ICommand RemoveProfileCommand { get; }   
 
-        public NewOrdersViewModel()
+        public NewOrdersViewModel(UserModel currentUser)
         {
+            _currentUser = currentUser;
+
             _ordersRepository = new OrdersRepository();
             _productsRepository = new ProductsRepository();
             _productionRepository = new ProductionRepository();
@@ -135,6 +139,18 @@ namespace SistemaFerredomos.src.ViewModels.Main
                     return;
                 }
 
+                if (string.IsNullOrWhiteSpace(CustomerName))
+                {
+                    MessageBox.Show("El nombre del cliente es obligatorio.");
+                    return;
+                }
+
+                if (!string.IsNullOrWhiteSpace(CustomerPhone) && !ValidationHelper.IsValidPhone(CustomerPhone))
+                {
+                    MessageBox.Show("El teléfono ingresado no es válido.");
+                    return;
+                }
+
                 CheckMissingMaterials();
 
                 if (MissingMaterials.Any())
@@ -152,7 +168,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
                 var order = new OrdersModel
                 {
-                    UserId = 1,
+                    UserId = _currentUser.Id,
                     Date = DateTime.Now,
                     CustomerName = CustomerName,
                     CustomerPhone = CustomerPhone,
@@ -248,6 +264,16 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private void AddCatalogProduct(object obj)
         {
             if (SelectedCatalogProduct == null) return;
+
+            var existing = OrderProducts.FirstOrDefault(p => p.ProductId == SelectedCatalogProduct.Id);
+
+            if (existing != null)
+            {
+                existing.Quantity++;
+                OnPropertyChanged(nameof(TotalPrice));
+                return;
+            }
+
             OrderProducts.Add(new OrderDetailsProductsModel
             {
                 ProductId = SelectedCatalogProduct.Id,
@@ -255,6 +281,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 UnitPrice = SelectedCatalogProduct.SalePrice,
                 Products = SelectedCatalogProduct
             });
+
             OnPropertyChanged(nameof(TotalPrice));
         }
 

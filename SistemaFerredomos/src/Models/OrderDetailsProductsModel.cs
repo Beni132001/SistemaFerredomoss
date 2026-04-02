@@ -1,23 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SistemaFerredomos.src.Models;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
-namespace SistemaFerredomos.src.Models
+public class OrderDetailsProductsModel : INotifyPropertyChanged
 {
-    public class OrderDetailsProductsModel
-    {
-        public int OrderId { get; set; }
-        public int ProductId { get; set; }
-        public int Quantity { get; set; }
-        public decimal UnitPrice { get; set; }
-        public OrdersModel Orders { get; set; }
-        public ProductsModel Products { get; set; }
+    public int OrderId { get; set; }
+    public int ProductId { get; set; }
+    public decimal UnitPrice { get; set; }
+    public OrdersModel Orders { get; set; }
+    public ProductsModel Products { get; set; }
 
-        public decimal Subtotal
+    private int _quantity;
+    public int Quantity
+    {
+        get => _quantity;
+        set
         {
-            get { return Quantity * UnitPrice; }
+            _quantity = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(Subtotal));
         }
     }
+
+    public decimal Subtotal => Quantity * UnitPrice;
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged([CallerMemberName] string name = null)
+        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 }

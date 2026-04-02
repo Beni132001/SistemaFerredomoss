@@ -11,6 +11,17 @@
 
     <UserControl.Resources>
         <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <Style x:Key="LowStockRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                    <Setter Property="Background" Value="#FFEBEE"/>
+                    <Setter Property="Foreground" Value="#C62828"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="10">
@@ -20,17 +31,25 @@
                 <TextBox Width="200" Height="28" 
                          Margin="0,0,10,0" 
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
-                         ToolTip="Buscar material..." />
+                         ToolTip="Buscar por nombre o proveedor..."/>
 
                 <Button Content="Agregar Material"
                         Command="{Binding AddCommand}"
                         Width="150"
+                        Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"
                         x:Name="btnAgregarMaterial"/>
+
+                <!-- Indicador de registros -->
+                <TextBlock Text="{Binding RecordSummary}"
+               VerticalAlignment="Center"
+               Foreground="#7F8C8D"
+               Margin="15,0,0,0"/>
             </StackPanel>
 
             <!-- DataGrid de Materiales -->
             <DataGrid x:Name="dgMaterials"
                       ItemsSource="{Binding FilteredMaterials}"
+                      RowStyle="{StaticResource LowStockRowStyle}"
                       AutoGenerateColumns="False"
                       SelectedItem="{Binding SelectedMaterial}"
                       CanUserAddRows="False"
@@ -53,8 +72,8 @@
 
                     <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
                     <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
-                    <DataGridTextColumn x:Name="colPrecioCompra" Header="Precio Compra" Binding="{Binding PurchasePrice}" Width="100"/>
-                    <DataGridTextColumn Header="Precio Venta" Binding="{Binding SalePrice}" Width="100"/>
+                    <DataGridTextColumn x:Name="colPrecioCompra" Header="Precio Compra" Binding="{Binding PurchasePrice, StringFormat=C}" Width="100"/>
+                    <DataGridTextColumn Header="Precio Venta" Binding="{Binding SalePrice, StringFormat=C}" Width="100"/>
                     <DataGridTextColumn Header="Proveedor" Binding="{Binding Supplier.Name}" Width="150"/>
 
                     <!-- Columna de acciones -->
@@ -64,10 +83,13 @@
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Content="Editar" Margin="5,0"
                                             Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                    
                                     <Button Content="Eliminar"
                                             Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}"/>
+                                            CommandParameter="{Binding}"
+                                            Visibility="{Binding DataContext.IsAdmin, RelativeSource={RelativeSource AncestorType=DataGrid}, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                                 </StackPanel>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>

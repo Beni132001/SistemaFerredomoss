@@ -110,6 +110,20 @@ namespace SistemaFerredomos.src.Repositories.Main
             }
         }
 
+        public bool HasDependencies(int supplierId)
+        {
+            using var conn = _databaseService.GetConnection();
+            conn.Open();
+
+            var cmd = new MySqlCommand(
+                "SELECT COUNT(*) FROM materials WHERE supplier_id = @id",
+                conn);
+
+            cmd.Parameters.AddWithValue("@id", supplierId);
+
+            return Convert.ToInt32(cmd.ExecuteScalar()) > 0;
+        }
+
         private SupplierModel MapReader(MySqlDataReader reader)
         {
             return new SupplierModel

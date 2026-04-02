@@ -45,7 +45,7 @@
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Código" Binding="{Binding Code}" Width="120"/>
                     <DataGridTextColumn Header="Nombre" Binding="{Binding Name}" Width="*"/>
-                    <DataGridTextColumn Header="Medida" Binding="{Binding Size}" Width="100"/>
+                    <DataGridTextColumn Header="Medida (m)" Binding="{Binding Size}" Width="100"/>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>
@@ -70,6 +70,7 @@
                 <!-- Código -->
                 <TextBlock Text="Código:"/>
                 <TextBox Text="{Binding Code, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding IsCodeEditable}"
                          Margin="0,4,0,10"/>
 
                 <!-- Nombre -->

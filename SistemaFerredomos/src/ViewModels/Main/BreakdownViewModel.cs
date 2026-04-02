@@ -15,9 +15,20 @@ namespace SistemaFerredomos.src.ViewModels.Main
     {
         private readonly BreakdownRepository _repository;
         private readonly ProfileRepository _profileRepository;
+        private readonly OrdersRepository _ordersRepository;
 
         public ObservableCollection<BreakdownModel> BreakdownList { get; set; } = new ObservableCollection<BreakdownModel>();
         public ObservableCollection<ProfileModel> ProfileList { get; set; } = new ObservableCollection<ProfileModel>();
+        public ObservableCollection<OrdersModel> PendingOrders { get; set; } = new();
+
+        private List<BreakdownModel> _allBreakdowns = new();
+
+        private OrdersModel _selectedOrder;
+        public OrdersModel SelectedOrder
+        {
+            get => _selectedOrder;
+            set { if (SetProperty(ref _selectedOrder, value)) CommandManager.InvalidateRequerySuggested(); }
+        }
 
         // Ítem seleccionado en la tabla
         private BreakdownModel _selectedBreakdown;
@@ -35,7 +46,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set
             {
                 if (SetProperty(ref _searchOrder, value))
-                    LoadBreakdowns();
+                    ApplyBreakdownFilter(); // solo filtra en memoria, sin tocar la BD
             }
         }
 
@@ -96,31 +107,42 @@ namespace SistemaFerredomos.src.ViewModels.Main
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
         public ICommand ExportCommand { get; }
+        public ICommand LoadCommand { get; }
 
         public BreakdownViewModel(BreakdownRepository repository = null, ProfileRepository profileRepository = null)
         {
             _repository = repository ?? new BreakdownRepository();
             _profileRepository = profileRepository ?? new ProfileRepository();
+            _ordersRepository = new OrdersRepository();
 
             LoadBreakdowns();
             LoadProfiles();
+            LoadPendingOrders();
 
             AddCommand = new RelayCommand(o => OpenForm());
             DeleteCommand = new RelayCommand(o => DeleteBreakdown(), o => SelectedBreakdown != null);
             SaveCommand = new RelayCommand(o => SaveBreakdown(), o => CanSave());
             CancelCommand = new RelayCommand(o => CloseForm());
             ExportCommand = new RelayCommand(o => ExportToExcel(), o => BreakdownList.Any());
+            LoadCommand = new RelayCommand(o => LoadBreakdowns());
         }
 
         public void LoadBreakdowns()
         {
+            _allBreakdowns = _repository.GetAll();
+            ApplyBreakdownFilter();
+
+        }
+        private void ApplyBreakdownFilter()
+        {
             BreakdownList.Clear();
 
-            var list = string.IsNullOrWhiteSpace(SearchOrder)
-                ? _repository.GetAll()
-                : _repository.GetByOrderNumber(SearchOrder.Trim());
+            var filtered = string.IsNullOrWhiteSpace(SearchOrder)
+                ? _allBreakdowns
+                : _allBreakdowns.Where(b =>
+                    b.OrderNumber.Contains(SearchOrder.Trim(), StringComparison.OrdinalIgnoreCase));
 
-            foreach (var b in list)
+            foreach (var b in filtered)
                 BreakdownList.Add(b);
         }
 
@@ -138,8 +160,16 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
         }
 
+        private void LoadPendingOrders()
+        {
+            PendingOrders.Clear();
+            foreach (var o in _ordersRepository.GetPendingOrders())
+                PendingOrders.Add(o);
+        }
+
         private void OpenForm()
         {
+            LoadPendingOrders(); // refrescar por si hay órdenes nuevas
             ClearForm();
             IsFormVisible = true;
         }
@@ -152,7 +182,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void ClearForm()
         {
-            OrderNumber = string.Empty;
+            SelectedOrder = null;
             SelectedProfile = null;
             Size = 0;
             Color = string.Empty;
@@ -161,9 +191,9 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private bool CanSave()
         {
-            return !string.IsNullOrWhiteSpace(OrderNumber) &&
+            return SelectedOrder != null &&
                    SelectedProfile != null &&
-                   Quantity > 0 && 
+                   Quantity > 0 &&
                    (Size > 0 || SelectedProfile?.Size > 0);
         }
 
@@ -171,7 +201,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
         {
             var breakdown = new BreakdownModel
             {
-                OrderNumber = OrderNumber.Trim(),
+                OrderNumber = SelectedOrder.Id.ToString(),
                 ProfileCode = SelectedProfile?.Code,
                 ProfileName = SelectedProfile?.Name,
                 Size = Size > 0 ? Size : SelectedProfile?.Size ?? 0,

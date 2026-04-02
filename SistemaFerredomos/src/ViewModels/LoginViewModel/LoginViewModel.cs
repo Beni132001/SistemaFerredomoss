@@ -2,10 +2,11 @@
 using SistemaFerredomos.src.Services;
 using SistemaFerredomos.src.Repositories.LoginAuth;
 using SistemaFerredomos.src.ViewModels.Commons;
-using System;
+using System.Windows;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace SistemaFerredomos.src.ViewModels.LoginViewModel
 {
@@ -105,6 +106,7 @@ namespace SistemaFerredomos.src.ViewModels.LoginViewModel
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.ToString()); // completo
                 ErrorMessage = $"Error de conexión: {ex.Message}";
             }
         }

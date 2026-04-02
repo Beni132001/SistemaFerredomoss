@@ -15,6 +15,12 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private bool _isAdmin;
         private string _searchText;
 
+        public static decimal LowStockThreshold => 5;
+
+        public string RecordSummary => FilteredProducts.Count == Products.Count
+            ? $"{Products.Count} productos"
+            : $"{FilteredProducts.Count} de {Products.Count} productos";
+
         public ProductsInventoryViewModel(ProductsRepository repository = null, bool isAdmin = false)
         {
             _repository = repository ?? new ProductsRepository();
@@ -121,6 +127,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 FilteredProducts = new ObservableCollection<ProductsModel>(filtered);
             }
             OnPropertyChanged(nameof(FilteredProducts));
+            OnPropertyChanged(nameof(RecordSummary));
         }
 
         private void DeleteProduct(ProductsModel product)

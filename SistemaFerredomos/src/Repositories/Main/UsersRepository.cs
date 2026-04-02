@@ -52,7 +52,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                     {
                         cmd.Parameters.AddWithValue("@name", user.Name);
                         cmd.Parameters.AddWithValue("@username", user.UserName);
-                        cmd.Parameters.AddWithValue("@password", user.Password);
+                        cmd.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(user.Password));
                         cmd.Parameters.AddWithValue("@type", user.Type.ToString());
                         return cmd.ExecuteNonQuery() > 0;
                     }
@@ -84,7 +84,7 @@ namespace SistemaFerredomos.src.Repositories.Main
                         cmd.Parameters.AddWithValue("@username", user.UserName);
                         cmd.Parameters.AddWithValue("@type", user.Type.ToString());
                         if (!string.IsNullOrWhiteSpace(user.Password))
-                            cmd.Parameters.AddWithValue("@password", user.Password);
+                            cmd.Parameters.AddWithValue("@password", BCrypt.Net.BCrypt.HashPassword(user.Password));
                         return cmd.ExecuteNonQuery() > 0;
                     }
                 }

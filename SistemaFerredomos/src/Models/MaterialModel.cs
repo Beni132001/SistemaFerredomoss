@@ -20,5 +20,7 @@ namespace SistemaFerredomos.src.Models
         public string Shelf { get; set; }
         public string ColorCode { get; set; }
         public SupplierModel Supplier { get; set; }
+
+        public bool IsLowStock => Stock <= 5;
     }
 }

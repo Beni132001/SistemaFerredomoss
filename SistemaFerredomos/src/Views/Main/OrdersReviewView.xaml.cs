@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SistemaFerredomos.src.ViewModels.Main;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,15 @@ namespace SistemaFerredomos.src.Views.Main
         public OrdersReviewView()
         {
             InitializeComponent();
+        }
+        private void ClearFilters_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is OrdersReviewViewModel vm)
+            {
+                vm.DateFrom = null;
+                vm.DateTo = null;
+                vm.SelectedStatus = "Todos";
+            }
         }
     }
 }

@@ -13,6 +13,12 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private string _searchText;
         private bool _isAdmin;
 
+        public static decimal LowStockThreshold => 5;
+
+        public string RecordSummary => FilteredMaterials.Count == Materials.Count
+            ? $"{Materials.Count} materiales"
+            : $"{FilteredMaterials.Count} de {Materials.Count} materiales";
+
         public MaterialInventoryViewModel(MaterialRepository repository = null, bool isAdmin = false)
         {
             _repository = repository ?? new MaterialRepository();
@@ -60,10 +66,15 @@ namespace SistemaFerredomos.src.ViewModels.Main
             }
             else
             {
-                var filtered = Materials.Where(m => m.Name.ToLower().Contains(SearchText.ToLower()));
+                var query = SearchText.ToLower();
+                var filtered = Materials.Where(m =>
+                    (m.Name ?? "").ToLower().Contains(query) ||
+                    (m.Supplier?.Name ?? "").ToLower().Contains(query)
+                );
                 FilteredMaterials = new ObservableCollection<MaterialModel>(filtered);
             }
             OnPropertyChanged(nameof(FilteredMaterials));
+            OnPropertyChanged(nameof(RecordSummary));
         }
 
         private MaterialModel _selectedMaterial;

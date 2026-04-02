@@ -21,6 +21,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
             set => SetProperty(ref _selectedGlass, value);
         }
 
+
         // Campos del formulario
         private string _code;
         public string Code
@@ -69,6 +70,22 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private bool _isEditing;
         public string FormTitle => _isEditing ? "EDITAR VIDRIO" : "AGREGAR VIDRIO";
 
+
+        public bool IsCodeEditable => !_isEditing;
+
+        private List<GlassModel> _allGlass = new();
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                if (SetProperty(ref _searchText, value))
+                    ApplyFilter();
+            }
+        }
+
         // Commands
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
@@ -91,8 +108,20 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
         private void LoadGlass()
         {
+            _allGlass = _repository.GetAll();
+            ApplyFilter();
+        }
+        private void ApplyFilter()
+        {
             GlassList.Clear();
-            foreach (var g in _repository.GetAll())
+
+            var filtered = string.IsNullOrWhiteSpace(SearchText)
+                ? _allGlass
+                : _allGlass.Where(g =>
+                    (g.Code ?? "").ToLower().Contains(SearchText.ToLower()) ||
+                    (g.Name ?? "").ToLower().Contains(SearchText.ToLower()));
+
+            foreach (var g in filtered)
                 GlassList.Add(g);
         }
 
@@ -115,6 +144,7 @@ namespace SistemaFerredomos.src.ViewModels.Main
 
             IsFormVisible = true;
             OnPropertyChanged(nameof(FormTitle));
+            OnPropertyChanged(nameof(IsCodeEditable));
         }
 
         private void CloseForm()
@@ -135,7 +165,10 @@ namespace SistemaFerredomos.src.ViewModels.Main
         private bool CanSave()
         {
             return !string.IsNullOrWhiteSpace(Code) &&
-                   !string.IsNullOrWhiteSpace(Name);
+                   !string.IsNullOrWhiteSpace(Name) &&
+                   Width > 0 &&
+                   Height > 0 &&
+                   Thickness > 0;
         }
 
         private void SaveGlass()
@@ -148,6 +181,17 @@ namespace SistemaFerredomos.src.ViewModels.Main
                 Height = Height,
                 Thickness = Thickness
             };
+
+            // Solo verificar duplicado al agregar, no al editar
+            if (!_isEditing && _repository.ExistsCode(glass.Code))
+            {
+                MessageBox.Show(
+                    $"Ya existe un vidrio con el código '{glass.Code}'.",
+                    "Código duplicado",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
 
             bool success = _isEditing
                 ? _repository.Update(glass)

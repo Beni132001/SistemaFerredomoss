@@ -12,6 +12,16 @@
     <UserControl.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:ImagePathToBitmapConverter x:Key="ImagePathToBitmapConverter"/>
+
+        <Style x:Key="LowStockRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLowStock}" Value="True">
+                    <Setter Property="Background" Value="#FFEBEE"/>
+                    <Setter Property="Foreground" Value="#C62828"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
     <Grid Margin="10">
@@ -32,12 +42,19 @@
                     Visibility="{Binding IsAdmin, Converter={StaticResource BooleanToVisibilityConverter}}"
                     Width="150" Height="30"
                     x:Name="btnAgregarProducto"/>
+
+            <!-- Indicador de registros -->
+            <TextBlock Text="{Binding RecordSummary}"
+               VerticalAlignment="Center"
+               Foreground="#7F8C8D"
+               Margin="15,0,0,0"/>
         </StackPanel>
 
         <!-- Tabla de productos -->
         <DataGrid x:Name="ProductsDataGrid"
                   Grid.Row="1"
                   ItemsSource="{Binding FilteredProducts}"
+                  RowStyle="{StaticResource LowStockRowStyle}"
                   AutoGenerateColumns="False"
                   SelectedItem="{Binding SelectedProduct}"
                   CanUserAddRows="False"
